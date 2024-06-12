@@ -1,0 +1,234 @@
+name: Validation Steps (sub)
+
+on: 
+  workflow_call:
+    inputs:
+      environment:
+        description: 'Environment to run tests against'
+        required: true
+        type: string
+    secrets:
+      AWS_REGION:
+        required: true
+      EKS_CLUSTER_NAME:
+        required: true
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  SCRIPTS_FOLDER: "./scripts"
+
+jobs:
+  workflow_setup:
+    name: Setup steps
+    runs-on: [ self-hosted, "run_id:${{ inputs.environment }}-${{ github.run_id }}" ]
+    environment: ${{ inputs.environment }}
+    outputs:
+      microservices: ${{ steps.set-outputs.outputs.microservices }}
+      cronjobs: ${{ steps.set-outputs.outputs.cronjobs }}
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+      - id: set-outputs
+        run: |
+          echo "microservices=$(ls microservices | jq -R -s -c 'split("\n")[:-1]')" >> "$GITHUB_OUTPUT"
+          echo "cronjobs=$(ls jobs | jq -R -s -c 'split("\n")[:-1]')" >> "$GITHUB_OUTPUT"
+
+  chart_validation:
+    name: Helm Chart validation
+    needs: [ workflow_setup ]
+    runs-on: [ self-hosted, "run_id:${{ inputs.environment }}-${{ github.run_id }}" ]
+    environment: ${{ inputs.environment }}
+    strategy:
+      matrix:
+        chartType: ["microservice", "cronjob"]
+      fail-fast: false
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+      - name: Helm Chart Linting
+        id: helm_lint
+        env: 
+          CHART_TYPE: ${{ matrix.chartType }}
+        run: |
+          set -euo pipefail
+
+          OPTIONS=""
+
+          if [[ $CHART_TYPE == "microservice" ]]; then
+            OPTIONS=" --microservices "
+          elif [[ $CHART_TYPE == "cronjob" ]]; then
+            OPTIONS=" --jobs "
+          else
+            echo "::error:: Workflow cannot be run on selected chart $CHART_TYPE"
+            exit 1
+          fi
+
+          $SCRIPTS_FOLDER/helmLint-main.sh --debug --environment ${{ inputs.environment }} --output console $OPTIONS 
+
+  diff_microservices:
+    name: ${{ matrix.microservice }}
+    needs: [ workflow_setup, chart_validation ]
+    runs-on: [self-hosted, "run_id:${{ inputs.environment }}-${{ github.run_id }}"]
+    environment: ${{ inputs.environment }}
+    strategy:
+      matrix:
+        microservice: ${{ fromJson(needs.workflow_setup.outputs.microservices) }}
+      fail-fast: false
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+      - name: Set kubeconfig
+        run: |
+          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
+      - name: Helm Chart Template
+        id: helm_template
+        env: 
+          MICROSERVICE_NAME: ${{ matrix.microservice }}
+        run: |
+          set -euo pipefail
+          
+          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --debug --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME --output console
+      - name: Kubectl Diff
+        id: kubectl_diff
+        env: 
+          MICROSERVICE_NAME: ${{ matrix.microservice }}
+        run: |
+          set -euo pipefail
+
+          set +e
+          $SCRIPTS_FOLDER/kubectlDiff-svc-single-standalone.sh --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME --output console
+          DIFF_EXIT_CODE=$?
+          set -e
+          
+          if [[ $DIFF_EXIT_CODE == 0 ]]; then
+            echo "::notice title=Diff Output::No diff has been found"
+          elif [[ $DIFF_EXIT_CODE == 1 ]]; then
+            echo "::warning title=Diff Output::Diff has been found"
+            
+            touch microservices_${MICROSERVICE_NAME}_diff.txt
+            echo $MICROSERVICE_NAME >> microservices_${MICROSERVICE_NAME}_diff.txt
+            echo "diff=true" >> $GITHUB_OUTPUT
+          else
+            echo "::error title=Diff Error::Error occurred during diff, exit code $DIFF_EXIT_CODE"
+            exit $DIFF_EXIT_CODE
+          fi
+      - name: Upload artifact
+        if: ${{ steps.kubectl_diff.outputs.diff }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: microservices_${{ matrix.microservice }}_diff
+          path: microservices_${{ matrix.microservice }}_diff.txt
+          retention-days: 1
+
+  diff_cronjobs:
+    name: ${{ matrix.cronjob }}
+    needs: [ workflow_setup, chart_validation ]
+    runs-on: [ self-hosted, "run_id:${{ inputs.environment }}-${{ github.run_id }}" ]
+    environment: ${{ inputs.environment }}
+    strategy:
+      matrix:
+        cronjob: ${{ fromJson(needs.workflow_setup.outputs.cronjobs) }}
+      fail-fast: false
+    steps:    
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+      - name: Set kubeconfig
+        run: |
+          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
+      - name: Helm Chart Template
+        id: helm_template
+        env: 
+          CRONJOB_NAME: ${{ matrix.cronjob }}
+        run: |
+          set -euo pipefail
+          
+          $SCRIPTS_FOLDER/helmTemplate-cron-single.sh --debug --environment ${{ inputs.environment }} --job $CRONJOB_NAME --output console
+      - name: Kubectl Diff
+        id: kubectl_diff
+        env: 
+          CRONJOB_NAME: ${{ matrix.cronjob }}
+        run: |
+          set -euo pipefail
+
+          set +e
+          $SCRIPTS_FOLDER/kubectlDiff-cron-single-standalone.sh --environment ${{ inputs.environment }} --job $CRONJOB_NAME --output console
+          DIFF_EXIT_CODE=$?
+          set -e
+          
+          if [[ $DIFF_EXIT_CODE == 0 ]]; then
+            echo "::notice title=Diff Output::No diff has been found"
+          elif [[ $DIFF_EXIT_CODE == 1 ]]; then
+            echo "::warning title=Diff Output::Diff has been found"
+            
+            touch cronjobs_${CRONJOB_NAME}_diff.txt
+            echo $CRONJOB_NAME >> cronjobs_${CRONJOB_NAME}_diff.txt
+            echo "diff=true" >> $GITHUB_OUTPUT
+          else
+            echo "::error title=Diff Error::Error occurred during diff, exit code $DIFF_EXIT_CODE"
+            exit $DIFF_EXIT_CODE
+          fi
+      - name: Upload artifact
+        if: ${{ steps.kubectl_diff.outputs.diff }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cronjobs_${{ matrix.cronjob }}_diff.txt
+          path: cronjobs_${{ matrix.cronjob }}_diff.txt
+          retention-days: 1
+
+  print_summary:
+    name: Print Diff Summary
+    if: ${{ always() }}
+    needs: [ workflow_setup, chart_validation, diff_microservices, diff_cronjobs ]
+    runs-on: [ self-hosted, "run_id:${{ inputs.environment }}-${{ github.run_id }}" ]
+    environment: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download microservices diff artifact
+        uses: actions/download-artifact@v4
+        with:
+          path: diff-artifacts
+          merge-multiple: true
+      - name: Print summary
+        run: |
+          set -euo pipefail
+          
+          if [ -d diff-artifacts ]; then
+
+            microservices=$(ls -R diff-artifacts | { grep -i "microservice" || :; }| sed 's/_diff.txt//g' | sed 's/microservices_//g' |  tr "\n" ",")
+            cronjobs=$(ls -R diff-artifacts | { grep -i "cronjob" || :; } | sed 's/_diff.txt//g' | sed 's/cronjobs_//g' | tr "\n" ",")
+
+            
+            echo "### K8s Diff Summary" >> $GITHUB_STEP_SUMMARY
+            
+            if [ -n "$microservices" ]; then
+              IFS=',' read -r -a MICROSERVICES_WITH_DIFF <<< "$microservices"
+              if [ -n "$MICROSERVICES_WITH_DIFF" ]; then
+              echo "#### Microservices:" >> $GITHUB_STEP_SUMMARY
+              fi
+
+              for item in ${MICROSERVICES_WITH_DIFF[@]}; do
+              echo "- $item" >> $GITHUB_STEP_SUMMARY
+              done
+            fi
+            
+            if [ -n "$cronjobs" ]; then
+              IFS=',' read -r -a CRONJOBS_WITH_DIFF <<< "$cronjobs"
+              if [ -n "$CRONJOBS_WITH_DIFF" ]; then
+                echo "#### Cronjobs:" >> $GITHUB_STEP_SUMMARY
+              fi          
+              for item in ${CRONJOBS_WITH_DIFF[@]}; do
+                echo "- $item" >> $GITHUB_STEP_SUMMARY
+              done
+            fi
+
+          else
+            echo "No diff found" >> $GITHUB_STEP_SUMMARY
+          fi
+
