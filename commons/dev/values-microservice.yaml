@@ -1,0 +1,26 @@
+namespace: "dev"
+replicas: 1
+
+techStack: "nodejs"
+
+service:
+  containerPort: 8088
+  
+image:
+  repositoryPrefix: "058264553932.dkr.ecr.eu-south-1.amazonaws.com"
+  imagePullPolicy: Always
+  tag: $IMAGE_TAG_PLACEHOLDER
+  digest: $IMAGE_DIGEST_PLACEHOLDER
+
+
+deployment:
+  host: "0.0.0.0"
+  logLevel: "info"
+
+resources:
+  requests:
+    cpu: "2"
+    memory: "2Gi"
+  limits:
+    cpu: "2"
+    memory: "2Gi"

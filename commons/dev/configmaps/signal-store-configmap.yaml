@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-signal-store
+  namespace: dev
+data:
+  SH_DB_HOST: "signalhub-signal-store-dev.cluster-c9ee68q8ss2g.eu-south-1.rds.amazonaws.com"
+  SH_DB_NAME: "signal_store"
+  SH_DB_PORT: "5432"
+  SH_DB_SCHEMA: "dev_signalhub"
+  SH_DB_USE_SSL: "true"
