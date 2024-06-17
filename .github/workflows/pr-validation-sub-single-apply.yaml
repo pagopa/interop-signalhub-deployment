@@ -25,27 +25,10 @@ env:
   SCRIPTS_FOLDER: "./scripts"
 
 jobs:
-  #workflow_setup:
-  #  name: Setup steps
-  #  runs-on: [ self-hosted, "run_id:${{ inputs.environment }}-${{ github.run_id }}" ]
-  #  environment: ${{ inputs.environment }}
-  #  outputs:
-  #    microservices: ${{ steps.set-outputs.outputs.microservices }}
-  #    cronjobs: ${{ steps.set-outputs.outputs.cronjobs }}
-  #  steps:
-  #    - name: Checkout
-  #      id: checkout
-  #      uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
-  #    - id: set-outputs
-  #      run: |
-  #        echo "microservices=$(ls microservices | jq -R -s -c 'split("\n")[:-1]')" >> "$GITHUB_OUTPUT"
-  #        echo "cronjobs=$(ls jobs | jq -R -s -c 'split("\n")[:-1]')" >> "$GITHUB_OUTPUT"
-
   deploy_common_configmaps:
     name: Deploy Common Configmaps
     runs-on: [ self-hosted, "run_id:${{ inputs.environment }}-${{ github.run_id }}" ]
     environment: ${{ inputs.environment }}
-    #needs: [workflow_setup]
     steps:
       - name: Checkout
         id: checkout
@@ -82,7 +65,6 @@ jobs:
     name: ${{ matrix.microservice }}
     runs-on: [ self-hosted, "run_id:${{ inputs.environment }}-${{ github.run_id }}" ]
     environment: ${{ inputs.environment }}
-    #needs: [workflow_setup, deploy_common_configmaps]
     needs: [deploy_common_configmaps]
     strategy:
       matrix:
@@ -132,10 +114,9 @@ jobs:
           done
 
   deploy_cj:
-    name: ${{ matrix.microservice }}
+    name: ${{ matrix.cronjob }}
     runs-on: [ self-hosted, "run_id:${{ inputs.environment }}-${{ github.run_id }}" ]
     environment: ${{ inputs.environment }}
-    #needs: [workflow_setup, deploy_common_configmaps]
     needs: [deploy_common_configmaps]
     strategy:
       matrix:
