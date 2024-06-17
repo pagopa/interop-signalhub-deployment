@@ -1,0 +1,28 @@
+name: "signalhub-be-pull-signal"
+
+roleArn: "arn:aws:iam::058264553932:role/signalhub-be-pull-signal-dev"
+
+service:
+  targetGroupArn: "arn:aws:elasticloadbalancing:eu-south-1:058264553932:targetgroup/dev-pull-signal/e4ba4fd60b328edd"
+
+configmap:
+  HOST: ""
+  PORT: ""
+  QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/058264553932/signalhub-push-signal-dev"
+  QUEUE_ENDPOINT: "https://sqs.eu-south-1.amazonaws.com"
+  QUEUE_NAME: "signalhub-push-signal-dev"
+  QUEUE_PORT: "443"
+
+deployment:
+  envFromConfigmaps:
+    SH_DB_HOST: "common-signal-store.SH_DB_HOST"
+    SH_DB_NAME: "common-signal-store.SH_DB_NAME"
+    SH_DB_PORT: "common-signal-store.SH_DB_PORT"
+    SH_DB_SCHEMA: "common-signal-store.SH_DB_SCHEMA"
+    SH_DB_USE_SSL: "common-signal-store.SH_DB_USE_SSL"
+  envFromSecrets:
+    SH_DB_USERNAME: "signal-store-pull-signal-user.username"
+    SH_DB_PASSWORD: "signal-store-pull-signal-user.password"
+
+
+    
