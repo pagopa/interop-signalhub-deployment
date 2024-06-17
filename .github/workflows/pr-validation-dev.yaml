@@ -1,7 +1,25 @@
 name: DEV - PR Validation
 
 #TODO cambiare condizione
-on: workflow_dispatch
+on: 
+  workflow_dispatch:
+    inputs:
+      skipDiff:
+        description: 'Skip diff'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+        - true
+        - false
+      applyTestMode:
+        description: 'Kubectl apply test mode on'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+        - true
+        - false
 
 #on:
 #  pull_request:
@@ -30,29 +48,44 @@ jobs:
           aws_region: ${{ secrets.AWS_REGION }}
           iam_role_arn: ${{ secrets.ECS_IAM_ROLE_ARN }}
           ecs_cluster_name: ${{ secrets.ECS_CLUSTER_NAME }}
-          #ecs_task_definition: interop-github-qa-runner-dev
           ecs_task_definition: ${{ secrets.ECS_TASK_DEFINITION }}
           ecs_task_cpu: ${{ vars.ECS_TASK_CPU }}
           ecs_task_memory: ${{ vars.ECS_TASK_MEMORY }}
-          #ecs_container_name: github-qa-runner
           ecs_container_name: ${{ vars.ECS_TASK_CONTAINER_NAME }}
           ecs_task_subnet_id: ${{ secrets.SUBNET_ID }}
           ecs_task_sec_group: ${{ secrets.SEC_GROUP_ID }}
-          #ecs_task_max_duration_seconds: 45
           ecs_task_max_duration_seconds: ${{ vars.ECS_TASK_MAX_DURATION_SECONDS }}
           pat_token: ${{ secrets.BOT_TOKEN }}
           environment: dev
   
-  validation:
+  lint:
     needs: [ create_runner ]
     secrets: inherit
     uses: ./.github/workflows/pr-validation-sub-core-validation.yaml
     with:
       environment: dev
+  
+  diff:
+    needs: [ create_runner, lint ]
+    secrets: inherit
+    if: ${{ inputs.skipDiff == 'false' }}
+    uses: ./.github/workflows/pr-validation-sub-core-diff.yaml
+    with:
+      environment: dev
+
+  deploy:
+    needs: [ create_runner, lint, diff ]
+    secrets: inherit
+    if: ${{ inputs.applyTestMode == 'true' }}
+    uses: ./.github/workflows/pr-validation-sub-single-apply.yaml
+    with:
+      environment: dev
+      timeout_seconds: 180
+  
 
   delete_runner:
     name: Delete Self-Hosted Runner
-    needs: [create_runner, validation]
+    needs: [create_runner, lint, diff, deploy]
     if: ${{ always() }}
     runs-on: ubuntu-22.04
     environment: dev
