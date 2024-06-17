@@ -1,7 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-. $(dirname "$0")/common-functions.sh
+SCRIPTS_FOLDER=$(dirname "$0")
+. $SCRIPTS_FOLDER/common-functions.sh
 
 help()
 {
@@ -93,7 +94,7 @@ if [[ -z $microservice || $microservice == "" ]]; then
   help
 fi
 if [[ $skip_dep == false ]]; then
-  bash $(dirname "$0")/helmDep.sh --untar
+  bash $SCRIPTS_FOLDER/helmDep.sh --untar
 fi
 
 VALID_CONFIG=$(isMicroserviceEnvConfigValid $microservice $environment)
@@ -103,29 +104,30 @@ if [[ -z $VALID_CONFIG || $VALID_CONFIG == "" ]]; then
 fi
 
 ENV=$environment
-OUT_DIR="./out/lint/$ENV/svc_$microservice"
-OUT_DIR=$( echo $OUT_DIR | sed  's/-/_/g' )
+MICROSERVICE_DIR=$( echo $microservice | sed  's/-/_/g' )
+OUT_DIR="$(pwd)/out/lint/$ENV/microservice_$MICROSERVICE_DIR"
 if [[ $output_redirect != "console" ]]; then
-  rm -rf $OUT_DIR
-  mkdir  -p $OUT_DIR
+  rm -rf "$OUT_DIR"
+  mkdir  -p "$OUT_DIR"
 else
   OUT_DIR=""
 fi
 
 # Find image version and digest
-. $(dirname "$0")/image-version-reader.sh -e $environment -m $microservice
+. $SCRIPTS_FOLDER/image-version-reader.sh -e $environment -m $microservice
 
 LINT_CMD="helm lint "
 if [[ $enable_debug == true ]]; then
     LINT_CMD=$LINT_CMD"--debug "
 fi
 
-OUTPUT_TO="> $OUT_DIR/$microservice.out.yaml"
+OUTPUT_TO="> \"$OUT_DIR/$microservice.out.yaml\""
 if [[ $output_redirect == "console" ]]; then
   OUTPUT_TO=""
 fi
 
-LINT_CMD=$LINT_CMD" charts/interop-eks-microservice-chart -f charts/interop-eks-microservice-chart/values.yaml -f commons/$ENV/values-microservice.compiled.yaml -f microservices/$microservice/$ENV/values.yaml $OUTPUT_TO"
+
+LINT_CMD=$LINT_CMD" \"$(pwd)/charts/interop-eks-microservice-chart\" -f \"$(pwd)/commons/$ENV/values-microservice.compiled.yaml\" -f \"$(pwd)/microservices/$microservice/$ENV/values.yaml\" $OUTPUT_TO"
 
 echo "$(eval $LINT_CMD)"$'\n\n'
 

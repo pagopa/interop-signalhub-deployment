@@ -1,17 +1,15 @@
 #!/bin/bash
 set -euo pipefail
 
-
 SCRIPTS_FOLDER=$(dirname "$0")
 . $SCRIPTS_FOLDER/common-functions.sh
 
 help()
 {
-    echo "Usage:  [ -e | --environment ] Cluster environment used for template generation
-        [ -d | --debug ] Enable Helm template debug
+    echo "Usage:  [ -e | --environment ] Cluster environment used to execute kubectl diff
+        [ -d | --debug ] Enable debug
         [ -j | --job ] Cronjob defined in jobs folder
         [ -o | --output ] Default output to predefined dir. Otherwise set to "console" to print template output on terminal
-        [ -c | --clean ] Clean files and directories after script successfull execution
         [ -sd | --skip-dep ] Skip Helm dependencies setup
         [ -h | --help ] This help"
     exit 2
@@ -36,6 +34,11 @@ do
           step=2
           shift 2
           ;;
+        -d | --debug)
+          enable_debug=true
+          step=1
+          shift 1
+          ;;
         -j | --job )
           [[ "${2:-}" ]] || "Job cannot be null" || help
           
@@ -50,11 +53,6 @@ do
           step=2
           shift 2
           ;;
-        -d | --debug)
-          enable_debug=true
-          step=1
-          shift 1
-          ;;
         -o | --output)
           [[ "${2:-}" ]] || "When specified, output cannot be null" || help
           output_redirect=$2
@@ -64,11 +62,6 @@ do
 
           step=2
           shift 2
-          ;;
-        -c | --clean)
-          post_clean=true
-          step=1
-          shift 1
           ;;
         -sd | --skip-dep)
           skip_dep=true
@@ -105,32 +98,15 @@ if [[ -z $VALID_CONFIG || $VALID_CONFIG == "" ]]; then
 fi
 
 ENV=$environment
-JOB_DIR=$( echo $job | sed  's/-/_/g' )
-OUT_DIR="$(pwd)/out/templates/$ENV/job_$JOB_DIR"
-if [[ $output_redirect != "console" ]]; then
-  rm -rf "$OUT_DIR"
-  mkdir  -p "$OUT_DIR"
-else
-  OUT_DIR=""
-fi
-
-# Find image version and digest
-bash $SCRIPTS_FOLDER/image-version-reader.sh -e $environment -j $job
-
-TEMPLATE_CMD="helm template "
+OPTIONS=" "
 if [[ $enable_debug == true ]]; then
-    TEMPLATE_CMD=$TEMPLATE_CMD"--debug "
+  OPTIONS=$OPTIONS" -d"
+fi
+if [[ -n $output_redirect ]]; then
+  OPTIONS=$OPTIONS" -o $output_redirect"
 fi
 
-OUTPUT_TO="> \"$OUT_DIR/$job.out.yaml\""
-if [[ $output_redirect == "console" ]]; then
-  OUTPUT_TO=""
-fi
+HELM_TEMPLATE_CMD="$SCRIPTS_FOLDER/helmTemplate-cron-single.sh -e $ENV -j $job $OPTIONS"
+APPLY_CMD="kubectl apply --show-managed-fields=false -f -"
 
-TEMPLATE_CMD=$TEMPLATE_CMD" $job interop-eks-cronjob-chart/interop-eks-cronjob-chart -f \"$(pwd)/commons/$ENV/values-cronjob.compiled.yaml\" -f \"$(pwd)/jobs/$job/$ENV/values.yaml\" $OUTPUT_TO"
-
-eval $TEMPLATE_CMD
-
-if [[ $output_redirect != "console" && $post_clean == true ]]; then
-  rm -rf $OUT_DIR
-fi
+eval $HELM_TEMPLATE_CMD" | "$APPLY_CMD

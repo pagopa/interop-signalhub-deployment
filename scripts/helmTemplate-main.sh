@@ -3,6 +3,9 @@ set -euo pipefail
 
 echo "Running helm template process"
 
+SCRIPTS_FOLDER=$(dirname "$0")
+. $SCRIPTS_FOLDER/common-functions.sh
+
 help()
 {
     echo "Usage:  [ -e | --environment ] Environment used to detect values.yaml for template generation
@@ -89,8 +92,9 @@ echo "Environment: $environment"
 
 ENV=$environment
 DELIMITER=";"
-MICROSERVICES_DIR=./microservices
-CRONJOBS_DIR=./jobs
+SCRIPTS_FOLDER=$(dirname "$0")
+MICROSERVICES_DIR="$(pwd)/microservices"
+CRONJOBS_DIR="$(pwd)/jobs"
 
 OPTIONS=" "
 if [[ $enable_debug == true ]]; then
@@ -110,24 +114,34 @@ OPTIONS=$OPTIONS" -sd"
 
 if [[ $template_microservices == true ]]; then
   echo "Start microservices templates generation"
-  for dir in $MICROSERVICES_DIR/*;
+  for dir in "$MICROSERVICES_DIR"/*;
   do
     CURRENT_SVC=$(basename "$dir");
     echo "Templating $CURRENT_SVC"
-    ./helmTemplate-svc-single.sh -e $ENV -m $CURRENT_SVC $OPTIONS
+    VALID_CONFIG=$(isMicroserviceEnvConfigValid $CURRENT_SVC $ENV)
+    if [[ -z $VALID_CONFIG || $VALID_CONFIG == "" ]]; then
+      echo "Environment configuration '$ENV' not found for microservice '$CURRENT_SVC'. Skip"
+    else
+     $SCRIPTS_FOLDER/helmTemplate-svc-single.sh -e $ENV -m $CURRENT_SVC $OPTIONS
+    fi
   done
 fi
 
 if [[ $template_jobs == true ]]; then
   echo "Start cronjobs templates generation"
-  for dir in $CRONJOBS_DIR/*;
+  for dir in "$CRONJOBS_DIR"/*;
   do
     CURRENT_JOB=$(basename "$dir");
     echo "Templating $CURRENT_JOB"
-    ./helmTemplate-cron-single.sh -e $ENV -j $CURRENT_JOB $OPTIONS
+    VALID_CONFIG=$(isCronjobEnvConfigValid $CURRENT_JOB $ENV)
+    if [[ -z $VALID_CONFIG || $VALID_CONFIG == "" ]]; then
+      echo "Environment configuration '$ENV' not found for cronjob '$CURRENT_JOB'"
+    else
+      $SCRIPTS_FOLDER/helmTemplate-cron-single.sh -e $ENV -j $CURRENT_JOB $OPTIONS
+    fi
   done
 fi
 
 if [[ $post_clean == true ]]; then
-  rm -rf ./out/templates
+  rm -rf $(pwd)/out/templates
 fi

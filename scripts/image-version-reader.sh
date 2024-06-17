@@ -1,7 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-. $(dirname "$0")/common-functions.sh
+SCRIPTS_FOLDER=$(dirname "$0")
+. $SCRIPTS_FOLDER/common-functions.sh
 
 help()
 {
@@ -81,6 +82,7 @@ if [[ -n $microservice ]] && [[ -n $job ]]; then
   help
 fi
 
+
 target=""
 tagetValues=""
 tag_placeholder="IMAGE_TAG_PLACEHOLDER"
@@ -100,17 +102,18 @@ else
   prefix="JOB_"
 fi
 
+CONTAINER_IMAGES_FOLDER="$(pwd)/commons/$environment"
 target=$(echo $target | sed  's/-/_/g' | tr '[a-z]' '[A-Z]')
 targetRegex=$prefix$target$suffix
 
-found_version=$(cat ./commons/$environment/values-images.sh | { egrep -i  "^$targetRegex" || :; } )
+found_version=$(cat "$CONTAINER_IMAGES_FOLDER/values-images.sh" | { egrep -i  "^$targetRegex" || :; } )
 if [[ -n $found_version ]]; then
   found_version=$(echo $found_version | cut -d '=' -f 2)
   #echo "Found version $found_version for $target"
 fi
 
 digestTargetRegex=$prefix$target$digestSuffix
-found_digest=$(cat ./commons/$environment/values-images.sh | { egrep -i  "^$digestTargetRegex" || :; } )
+found_digest=$(cat "$CONTAINER_IMAGES_FOLDER/values-images.sh" | { egrep -i  "^$digestTargetRegex" || :; } )
 if [[ -n $found_digest ]]; then
   found_digest=$(echo $found_digest | cut -d '=' -f 2)
   #echo "Found digest $found_digest for $target"
@@ -119,4 +122,4 @@ fi
 export $tag_placeholder=$found_version
 export $digest_placeholder=$found_digest
 
-envsubst < ./commons/$environment/$tagetValues.yaml > ./commons/$environment/$tagetValues.compiled.yaml
+envsubst < "$CONTAINER_IMAGES_FOLDER"/$tagetValues.yaml > "$CONTAINER_IMAGES_FOLDER"/$tagetValues.compiled.yaml

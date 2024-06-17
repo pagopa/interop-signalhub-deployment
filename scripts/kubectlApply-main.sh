@@ -1,15 +1,15 @@
 #!/bin/bash
 set -euo pipefail
 
-SCRIPTS_FOLDER=$(dirname "$0")
-. $SCRIPTS_FOLDER/common-functions.sh
+echo "Running kubectl apply process"
 
 help()
 {
-    echo "Usage:  [ -e | --environment ] Cluster environment used to execute kubectl diff
+    echo "Usage:  [ -e | --environment ] Environment used to execute kubectl diff
         [ -d | --debug ] Enable debug
-        [ -j | --job ] Cronjob defined in jobs folder
         [ -o | --output ] Default output to predefined dir. Otherwise set to "console" to print template output on terminal
+        [ -m | --microservices ] Execute diff for all microservices
+        [ -j | --jobs ] Execute diff for all cronjobs
         [ -sd | --skip-dep ] Skip Helm dependencies setup
         [ -h | --help ] This help"
     exit 2
@@ -17,8 +17,9 @@ help()
 
 args=$#
 environment=""
-job=""
 enable_debug=false
+template_microservices=false
+template_jobs=false
 post_clean=false
 output_redirect=""
 skip_dep=false
@@ -39,19 +40,15 @@ do
           step=1
           shift 1
           ;;
-        -j | --job )
-          [[ "${2:-}" ]] || "Job cannot be null" || help
-          
-          job=$2
-          jobAllowedRes=$(isAllowedCronjob $job)
-          if [[ -z $jobAllowedRes || $jobAllowedRes == "" ]]; then
-              echo "$job is not allowed"
-              echo "Allowed values: " $(getAllowedCronjobs)
-              help
-          fi
-
-          step=2
-          shift 2
+        -m | --microservices )
+          template_microservices=true
+          step=1
+          shift 1
+          ;;
+        -j | --jobs )
+          template_jobs=true
+          step=1
+          shift 1
           ;;
         -o | --output)
           [[ "${2:-}" ]] || "When specified, output cannot be null" || help
@@ -74,41 +71,54 @@ do
         *)
           echo "Unexpected option: $1"
           help
-
           ;;
     esac
 done
-
-
 
 if [[ -z $environment || $environment == "" ]]; then
   echo "Environment cannot be null"
   help
 fi
-if [[ -z $job || $job == "" ]]; then
-  echo "Job cannot null"
-  help
-fi
-if [[ $skip_dep == false ]]; then
-  bash $SCRIPTS_FOLDER/helmDep.sh
-fi
-
-VALID_CONFIG=$(isCronjobEnvConfigValid $job $environment)
-if [[ -z $VALID_CONFIG || $VALID_CONFIG == "" ]]; then
-  echo "Environment configuration '$environment' not found for cronjob '$job'"
-  help
-fi
+echo "Environment: $environment"
 
 ENV=$environment
+DELIMITER=";"
+SCRIPTS_FOLDER=$(dirname "$0")
+MICROSERVICES_DIR="$(pwd)/microservices"
+CRONJOBS_DIR="$(pwd)/jobs"
+
 OPTIONS=" "
 if [[ $enable_debug == true ]]; then
   OPTIONS=$OPTIONS" -d"
 fi
+if [[ $post_clean == true ]]; then
+  OPTIONS=$OPTIONS" -c"
+fi
 if [[ -n $output_redirect ]]; then
   OPTIONS=$OPTIONS" -o $output_redirect"
 fi
+if [[ $skip_dep == false ]]; then
+  bash $SCRIPTS_FOLDER/helmDep.sh
+fi
+# Skip further execution of helm deps build and update since we have already done it in the previous line 
+OPTIONS=$OPTIONS" -sd"
 
-HELM_TEMPLATE_CMD="$SCRIPTS_FOLDER/helmTemplate-cron-single.sh -e $ENV -j $job $OPTIONS"
-DIFF_CMD="KUBECTL_EXTERNAL_DIFF=$SCRIPTS_FOLDER/diff.sh kubectl diff --show-managed-fields=false  -f -"
+if [[ $template_microservices == true ]]; then
+  echo "Start microservices kubectl apply"
+  for dir in $MICROSERVICES_DIR/*;
+  do
+    CURRENT_SVC=$(basename "$dir");
+    echo "Diff $CURRENT_SVC"
+    sh $SCRIPTS_FOLDER/kubectlApply-svc-single-standalone.sh -e $ENV -m $CURRENT_SVC $OPTIONS
+  done
+fi
 
-eval $HELM_TEMPLATE_CMD" | "$DIFF_CMD
+if [[ $template_jobs == true ]]; then
+  echo "Start cronjobs kubectl apply"
+  for dir in $CRONJOBS_DIR/*;
+  do
+    CURRENT_JOB=$(basename "$dir");
+    echo "Diff $CURRENT_JOB"
+    sh $SCRIPTS_FOLDER/kubectlApply-cron-single-standalone.sh -e $ENV -j $CURRENT_JOB $OPTIONS
+  done
+fi

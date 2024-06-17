@@ -6,8 +6,6 @@ echo "Running kubectl diff process"
 help()
 {
     echo "Usage:  [ -e | --environment ] Environment used to execute kubectl diff
-        [ -d | --debug ] Enable debug
-        [ -o | --output ] Default output to predefined dir. Otherwise set to "console" to print template output on terminal
         [ -m | --microservices ] Execute diff for all microservices
         [ -j | --jobs ] Execute diff for all cronjobs
         [ -sd | --skip-dep ] Skip Helm dependencies setup
@@ -21,7 +19,6 @@ enable_debug=false
 template_microservices=false
 template_jobs=false
 post_clean=false
-output_redirect=""
 skip_dep=false
 
 step=1
@@ -35,11 +32,6 @@ do
           step=2
           shift 2
           ;;
-        -d | --debug)
-          enable_debug=true
-          step=1
-          shift 1
-          ;;
         -m | --microservices )
           template_microservices=true
           step=1
@@ -49,16 +41,6 @@ do
           template_jobs=true
           step=1
           shift 1
-          ;;
-        -o | --output)
-          [[ "${2:-}" ]] || "When specified, output cannot be null" || help
-          output_redirect=$2
-          if [[ $output_redirect != "console" ]]; then
-            help
-          fi
-
-          step=2
-          shift 2
           ;;
         -sd | --skip-dep)
           skip_dep=true
@@ -83,9 +65,8 @@ echo "Environment: $environment"
 
 ENV=$environment
 DELIMITER=";"
-SCRIPTS_FOLDER=$(dirname "$0")
-MICROSERVICES_DIR="$(pwd)/microservices"
-CRONJOBS_DIR="$(pwd)/jobs"
+MICROSERVICES_DIR=./microservices
+CRONJOBS_DIR=./jobs
 
 OPTIONS=" "
 if [[ $enable_debug == true ]]; then
@@ -94,15 +75,11 @@ fi
 if [[ $post_clean == true ]]; then
   OPTIONS=$OPTIONS" -c"
 fi
-if [[ -n $output_redirect ]]; then
-  OPTIONS=$OPTIONS" -o $output_redirect"
-fi
 if [[ $skip_dep == false ]]; then
-  bash $SCRIPTS_FOLDER/helmDep.sh
+  bash $(dirname "$0")/helmDep.sh
 fi
 # Skip further execution of helm deps build and update since we have already done it in the previous line 
 OPTIONS=$OPTIONS" -sd"
-
 
 if [[ $template_microservices == true ]]; then
   echo "Start microservices templates diff"
@@ -110,7 +87,7 @@ if [[ $template_microservices == true ]]; then
   do
     CURRENT_SVC=$(basename "$dir");
     echo "Diff $CURRENT_SVC"
-    $SCRIPTS_FOLDER/kubectlDiff-svc-single-standalone.sh -e $ENV -m $CURRENT_SVC $OPTIONS
+    ./kubectlDiff-svc-single-fromdir.sh -e $ENV -m $CURRENT_SVC $OPTIONS
   done
 fi
 
@@ -120,6 +97,10 @@ if [[ $template_jobs == true ]]; then
   do
     CURRENT_JOB=$(basename "$dir");
     echo "Diff $CURRENT_JOB"
-    $SCRIPTS_FOLDER/kubectlDiff-cron-single-standalone.sh -e $ENV -j $CURRENT_JOB $OPTIONS
+    ./kubectlDiff-cron-single-fromdir.sh -e $ENV -j $CURRENT_JOB $OPTIONS
   done
 fi
+
+#if [[ $post_clean == true ]]; then
+#  rm -rf ./out/templates
+#fi

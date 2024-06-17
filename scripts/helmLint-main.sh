@@ -3,6 +3,9 @@ set -euo pipefail
 
 echo "Running helm lint process"
 
+SCRIPTS_FOLDER=$(dirname "$0")
+. $SCRIPTS_FOLDER/common-functions.sh
+
 help()
 {
     echo "Usage:  [ -e | --environment ] Environment used to detect values.yaml for linting
@@ -90,8 +93,8 @@ echo "Environment: $environment"
 
 ENV=$environment
 DELIMITER=";"
-MICROSERVICES_DIR=./microservices
-CRONJOBS_DIR=./jobs
+MICROSERVICES_DIR="$(pwd)/microservices"
+CRONJOBS_DIR="$(pwd)/jobs"
 
 OPTIONS=" "
 if [[ $enable_debug == true ]]; then
@@ -104,34 +107,43 @@ if [[ -n $output_redirect ]]; then
   OPTIONS=$OPTIONS" -o $output_redirect"
 fi
 if [[ $skip_dep == false ]]; then
-  bash $(dirname "$0")/helmDep.sh
+  bash $SCRIPTS_FOLDER/helmDep.sh --untar
 fi
 # Skip further execution of helm deps build and update since we have already done it in the previous line 
-echo "####DONE"
 OPTIONS=$OPTIONS" -sd"
 
 
 if [[ $lint_microservices == true ]]; then
   echo "Start linting microservices"
-  for dir in $MICROSERVICES_DIR/*;
+  for dir in "$MICROSERVICES_DIR"/*;
   do
     CURRENT_SVC=$(basename "$dir");
     echo "Linting $CURRENT_SVC"
-    ./helmLint-svc-single.sh -e $ENV -m $CURRENT_SVC $OPTIONS
+    VALID_CONFIG=$(isMicroserviceEnvConfigValid $CURRENT_SVC $ENV)
+    if [[ -z $VALID_CONFIG || $VALID_CONFIG == "" ]]; then
+      echo "Environment configuration '$ENV' not found for microservice '$CURRENT_SVC'. Skip"
+    else
+      $SCRIPTS_FOLDER/helmLint-svc-single.sh -e $ENV -m $CURRENT_SVC $OPTIONS
+    fi
   done
 fi
 
 if [[ $lint_jobs == true ]]; then
   echo "Start linting cronjobs"
-  for dir in $CRONJOBS_DIR/*;
+  for dir in "$CRONJOBS_DIR"/*;
   do
     CURRENT_JOB=$(basename "$dir");
     echo "Linting $CURRENT_JOB"
-    ./helmLint-cron-single.sh -e $ENV -j $CURRENT_JOB $OPTIONS
+    VALID_CONFIG=$(isCronjobEnvConfigValid $CURRENT_JOB $ENV)
+    if [[ -z $VALID_CONFIG || $VALID_CONFIG == "" ]]; then
+      echo "Environment configuration '$ENV' not found for cronjob '$CURRENT_JOB'"
+    else
+      $SCRIPTS_FOLDER/helmLint-cron-single.sh -e $ENV -j $CURRENT_JOB $OPTIONS
+    fi
   done
 fi
 
 
 if [[ $post_clean == true ]]; then
-  rm -rf ./out/lint
+  rm -rf $(pwd)/out/lint
 fi

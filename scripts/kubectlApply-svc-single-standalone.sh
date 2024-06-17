@@ -8,7 +8,7 @@ help()
 {
     echo "Usage:  [ -e | --environment ] Cluster environment used to execute kubectl diff
         [ -d | --debug ] Enable debug
-        [ -j | --job ] Cronjob defined in jobs folder
+        [ -m | --microservice ] Microservice defined in microservices folder
         [ -o | --output ] Default output to predefined dir. Otherwise set to "console" to print template output on terminal
         [ -sd | --skip-dep ] Skip Helm dependencies setup
         [ -h | --help ] This help"
@@ -17,7 +17,7 @@ help()
 
 args=$#
 environment=""
-job=""
+microservice=""
 enable_debug=false
 post_clean=false
 output_redirect=""
@@ -39,15 +39,15 @@ do
           step=1
           shift 1
           ;;
-        -j | --job )
-          [[ "${2:-}" ]] || "Job cannot be null" || help
-          
-          job=$2
-          jobAllowedRes=$(isAllowedCronjob $job)
-          if [[ -z $jobAllowedRes || $jobAllowedRes == "" ]]; then
-              echo "$job is not allowed"
-              echo "Allowed values: " $(getAllowedCronjobs)
-              help
+        -m | --microservice )
+          [[ "${2:-}" ]] || "Microservice cannot be null" || help
+
+          microservice=$2
+          serviceAllowedRes=$(isAllowedMicroservice $microservice)
+          if [[ -z $serviceAllowedRes || $serviceAllowedRes == "" ]]; then
+            echo "$microservice is not allowed"
+            echo "Allowed values: " $(getAllowedMicroservices)
+            help
           fi
 
           step=2
@@ -79,28 +79,26 @@ do
     esac
 done
 
-
-
 if [[ -z $environment || $environment == "" ]]; then
   echo "Environment cannot be null"
   help
 fi
-if [[ -z $job || $job == "" ]]; then
-  echo "Job cannot null"
+if [[ -z $microservice || $microservice == "" ]]; then
+  echo "Microservice cannot be null"
   help
 fi
 if [[ $skip_dep == false ]]; then
   bash $SCRIPTS_FOLDER/helmDep.sh
 fi
 
-VALID_CONFIG=$(isCronjobEnvConfigValid $job $environment)
+VALID_CONFIG=$(isMicroserviceEnvConfigValid $microservice $environment)
 if [[ -z $VALID_CONFIG || $VALID_CONFIG == "" ]]; then
-  echo "Environment configuration '$environment' not found for cronjob '$job'"
+  echo "Environment configuration '$environment' not found for microservice '$microservice'"
   help
 fi
 
 ENV=$environment
-OPTIONS=" "
+OPTIONS=" -o console "
 if [[ $enable_debug == true ]]; then
   OPTIONS=$OPTIONS" -d"
 fi
@@ -108,7 +106,7 @@ if [[ -n $output_redirect ]]; then
   OPTIONS=$OPTIONS" -o $output_redirect"
 fi
 
-HELM_TEMPLATE_CMD="$SCRIPTS_FOLDER/helmTemplate-cron-single.sh -e $ENV -j $job $OPTIONS"
-DIFF_CMD="KUBECTL_EXTERNAL_DIFF=$SCRIPTS_FOLDER/diff.sh kubectl diff --show-managed-fields=false  -f -"
+HELM_TEMPLATE_CMD="$SCRIPTS_FOLDER/helmTemplate-svc-single.sh -e $ENV -m $microservice $OPTIONS"
+APPLY_CMD="kubectl apply --show-managed-fields=false -f -"
 
-eval $HELM_TEMPLATE_CMD" | "$DIFF_CMD
+eval $HELM_TEMPLATE_CMD" | "$APPLY_CMD

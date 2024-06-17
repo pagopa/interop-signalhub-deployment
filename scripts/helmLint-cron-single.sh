@@ -1,7 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-. $(dirname "$0")/common-functions.sh
+SCRIPTS_FOLDER=$(dirname "$0")
+. $SCRIPTS_FOLDER/common-functions.sh
 
 help()
 {
@@ -93,7 +94,7 @@ if [[ -z $job || $job == "" ]]; then
   help
 fi
 if [[ $skip_dep == false ]]; then
-  bash $(dirname "$0")/helmDep.sh --untar
+  bash $SCRIPTS_FOLDER/helmDep.sh --untar
 fi
 
 VALID_CONFIG=$(isCronjobEnvConfigValid $job $environment)
@@ -104,29 +105,30 @@ fi
 
 ENV=$environment
 
-OUT_DIR="./out/lint/$ENV/job_$job"
-OUT_DIR=$( echo $OUT_DIR | sed  's/-/_/g' )
+
+JOB_DIR=$( echo $job | sed  's/-/_/g' )
+OUT_DIR="$(pwd)/out/lint/$ENV/job_$JOB_DIR"
 if [[ $output_redirect != "console" ]]; then
-  rm -rf $OUT_DIR
-  mkdir  -p $OUT_DIR
+  rm -rf "$OUT_DIR"
+  mkdir  -p "$OUT_DIR"
 else
   OUT_DIR=""
 fi
 
 # Find image version and digest
-. $(dirname "$0")/image-version-reader.sh -e $environment -j $job
+bash $SCRIPTS_FOLDER/image-version-reader.sh -e $environment -j $job
 
 LINT_CMD="helm lint "
 if [[ $enable_debug == true ]]; then
     LINT_CMD=$LINT_CMD"--debug "
 fi
 
-OUTPUT_TO="> $OUT_DIR/$job.out.yaml"
+OUTPUT_TO="> \"$OUT_DIR/$job.out.yaml\""
 if [[ $output_redirect == "console" ]]; then
   OUTPUT_TO=""
 fi
 
-LINT_CMD=$LINT_CMD" charts/interop-eks-cronjob-chart -f charts/interop-eks-cronjob-chart/values.yaml -f commons/$ENV/values-cronjob.compiled.yaml -f jobs/$job/$ENV/values.yaml $OUTPUT_TO"
+LINT_CMD=$LINT_CMD" \"$(pwd)/charts/interop-eks-cronjob-chart\" -f \"$(pwd)/charts/interop-eks-cronjob-chart/values.yaml\" -f \"$(pwd)/commons/$ENV/values-cronjob.compiled.yaml\" -f \"$(pwd)/jobs/$job/$ENV/values.yaml\" $OUTPUT_TO"
 
 echo "$(eval $LINT_CMD)"$'\n\n'
 
