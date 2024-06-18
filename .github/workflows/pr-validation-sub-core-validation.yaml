@@ -1,0 +1,56 @@
+name: Validation Steps (sub)
+
+on: 
+  workflow_call:
+    inputs:
+      environment:
+        description: 'Environment to run tests against'
+        required: true
+        type: string
+    secrets:
+      AWS_REGION:
+        required: true
+      EKS_CLUSTER_NAME:
+        required: true
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  SCRIPTS_FOLDER: "./scripts"
+
+jobs:
+
+  chart_validation:
+    name: Helm Chart validation
+    runs-on: ubuntu-22.04
+    environment: ${{ inputs.environment }}
+    strategy:
+      matrix:
+        chartType: ["microservice", "cronjob"]
+      fail-fast: false
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+      - name: Helm Chart Linting
+        id: helm_lint
+        env: 
+          CHART_TYPE: ${{ matrix.chartType }}
+        run: |
+          set -euo pipefail
+
+          OPTIONS=""
+
+          if [[ $CHART_TYPE == "microservice" ]]; then
+            OPTIONS=" --microservices "
+          elif [[ $CHART_TYPE == "cronjob" ]]; then
+            OPTIONS=" --jobs "
+          else
+            echo "::error:: Workflow cannot be run on selected chart $CHART_TYPE"
+            exit 1
+          fi
+
+          $SCRIPTS_FOLDER/helmLint-main.sh --debug --environment ${{ inputs.environment }} --output console $OPTIONS 
+
