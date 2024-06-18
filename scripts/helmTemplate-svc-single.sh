@@ -127,7 +127,7 @@ if [[ $output_redirect == "console" ]]; then
 fi
 
 TEMPLATE_CMD=$TEMPLATE_CMD" $microservice interop-eks-microservice-chart/interop-eks-microservice-chart -f \"$(pwd)/commons/$ENV/values-microservice.compiled.yaml\" -f \"$(pwd)/microservices/$microservice/$ENV/values.yaml\" $OUTPUT_TO"
-#TEMPLATE_CMD=$TEMPLATE_CMD" $microservice charts/interop-eks-microservice-chart -f charts/interop-eks-microservice-chart/values.yaml -f commons/$ENV/values-microservice.compiled.yaml -f microservices/$microservice/$ENV/values.yaml $OUTPUT_TO"
+#TEMPLATE_CMD=$TEMPLATE_CMD" $microservice \"$(pwd)/charts/interop-eks-microservice-chart\" -f \"$(pwd)/charts/interop-eks-microservice-chart/values.yaml\" -f \"$(pwd)/commons/$ENV/values-microservice.compiled.yaml\" -f \"$(pwd)/microservices/$microservice/$ENV/values.yaml\" $OUTPUT_TO"
 
 eval $TEMPLATE_CMD
 
