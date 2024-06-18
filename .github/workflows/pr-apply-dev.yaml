@@ -1,8 +1,6 @@
-name: DEV - PR Validation
+name: DEV - PR K8s Apply
 
-on:
-  pull_request:
-    types: [opened, edited, reopened, synchronize]      
+on: workflow_dispatch
 
 permissions:
   id-token: write
@@ -36,24 +34,18 @@ jobs:
           ecs_task_max_duration_seconds: ${{ vars.ECS_TASK_MAX_DURATION_SECONDS }}
           pat_token: ${{ secrets.BOT_TOKEN }}
           environment: dev
-  
-  lint:
+
+  deploy:
     needs: [ create_runner ]
     secrets: inherit
-    uses: ./.github/workflows/pr-validation-sub-core-validation.yaml
+    uses: ./.github/workflows/pr-validation-sub-single-apply.yaml
     with:
       environment: dev
-  
-  diff:
-    needs: [ create_runner, lint ]
-    secrets: inherit
-    uses: ./.github/workflows/pr-validation-sub-core-diff.yaml
-    with:
-      environment: dev
+      timeout_seconds: 180
 
   delete_runner:
     name: Delete Self-Hosted Runner
-    needs: [create_runner, lint, diff]
+    needs: [create_runner, deploy]
     if: ${{ always() }}
     runs-on: ubuntu-22.04
     environment: dev
@@ -70,4 +62,4 @@ jobs:
           iam_role_arn: ${{ secrets.ECS_IAM_ROLE_ARN }}
           ecs_cluster_name: ${{ secrets.ECS_CLUSTER_NAME }}
           pat_token: ${{ secrets.BOT_TOKEN }}
-          environment: dev
+          environment: dev  
