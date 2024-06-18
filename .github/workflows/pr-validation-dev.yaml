@@ -7,11 +7,17 @@ on:
 permissions:
   id-token: write
   contents: read
-
 jobs:
+  lint:
+    secrets: inherit
+    uses: ./.github/workflows/pr-validation-sub-core-validation.yaml
+    with:
+      environment: dev
+  
   create_runner:
     name: Create Self-Hosted Runner
     runs-on: ubuntu-22.04
+    needs: [ lint ]
     environment: dev
     outputs:
       ecs_task_id: ${{ steps.start_runner.outputs.ecs_task_id }}
@@ -37,15 +43,8 @@ jobs:
           pat_token: ${{ secrets.BOT_TOKEN }}
           environment: dev
   
-  lint:
-    needs: [ create_runner ]
-    secrets: inherit
-    uses: ./.github/workflows/pr-validation-sub-core-validation.yaml
-    with:
-      environment: dev
-  
   diff:
-    needs: [ create_runner, lint ]
+    needs: [ lint, create_runner ]
     secrets: inherit
     uses: ./.github/workflows/pr-validation-sub-core-diff.yaml
     with:
@@ -53,7 +52,7 @@ jobs:
 
   delete_runner:
     name: Delete Self-Hosted Runner
-    needs: [create_runner, lint, diff]
+    needs: [lint, create_runner, diff]
     if: ${{ always() }}
     runs-on: ubuntu-22.04
     environment: dev
@@ -71,3 +70,4 @@ jobs:
           ecs_cluster_name: ${{ secrets.ECS_CLUSTER_NAME }}
           pat_token: ${{ secrets.BOT_TOKEN }}
           environment: dev
+    

@@ -24,7 +24,7 @@ jobs:
 
   chart_validation:
     name: Helm Chart validation
-    runs-on: [ self-hosted, "run_id:${{ inputs.environment }}-${{ github.run_id }}" ]
+    runs-on: ubuntu-22.04
     environment: ${{ inputs.environment }}
     strategy:
       matrix:
