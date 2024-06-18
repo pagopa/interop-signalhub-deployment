@@ -3,18 +3,20 @@ name: "signalhub-be-push-signal"
 roleArn: "arn:aws:iam::058264553932:role/signalhub-be-push-signal-dev"
 
 service:
+  containerPort: 8088
   targetGroupArn: "arn:aws:elasticloadbalancing:eu-south-1:058264553932:targetgroup/dev-push-signal/b6f1b1ff0095e4b9"
 
 configmap:
   ACCEPTED_AUDIENCE: "TODO"
-  HOST: ""
-  PORT: ""
   QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/058264553932/signalhub-push-signal-dev"
   QUEUE_ENDPOINT: "https://sqs.eu-south-1.amazonaws.com"
   QUEUE_NAME: "signalhub-push-signal-dev"
   QUEUE_PORT: "443"
 
 deployment:
+  env:
+    HOST: ""
+    PORT: ""
   envFromConfigmaps:
     SH_DB_HOST: "common-signal-store.SH_DB_HOST"
     SH_DB_NAME: "common-signal-store.SH_DB_NAME"

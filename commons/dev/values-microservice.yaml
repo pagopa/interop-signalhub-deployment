@@ -3,9 +3,6 @@ replicas: 1
 
 techStack: "nodejs"
 
-service:
-  containerPort: 8088
-  
 image:
   repositoryPrefix: "058264553932.dkr.ecr.eu-south-1.amazonaws.com"
   imagePullPolicy: Always
