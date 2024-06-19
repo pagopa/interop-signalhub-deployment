@@ -11,6 +11,7 @@ help()
         [ -m | --microservice ] Microservice defined in microservices folder
         [ -o | --output ] Default output to predefined dir. Otherwise set to "console" to print template output on terminal
         [ -c | --clean ] Clean files and directories after script successfull execution
+        [ -v | --verbose ] Show debug messages
         [ -sd | --skip-dep ] Skip Helm dependencies setup
         [ -h | --help ] This help"
     exit 2
@@ -23,6 +24,7 @@ enable_debug=false
 post_clean=false
 output_redirect=""
 skip_dep=false
+verbose=false
 
 step=1
 for (( i=0; i<$args; i+=$step ))
@@ -74,6 +76,11 @@ do
           step=1
           shift 1
           ;;
+        -v| --verbose )
+          verbose=true
+          step=1
+          shift 1
+          ;;
         -h | --help )
           help
           ;;
@@ -121,7 +128,8 @@ if [[ $enable_debug == true ]]; then
     TEMPLATE_CMD=$TEMPLATE_CMD"--debug "
 fi
 
-OUTPUT_TO="> \"$OUT_DIR/$microservice.out.yaml\""
+OUTPUT_FILE="\"$OUT_DIR/$microservice.out.yaml\""
+OUTPUT_TO="> $OUTPUT_FILE"
 if [[ $output_redirect == "console" ]]; then
   OUTPUT_TO=""
 fi
@@ -130,6 +138,9 @@ TEMPLATE_CMD=$TEMPLATE_CMD" $microservice interop-eks-microservice-chart/interop
 #TEMPLATE_CMD=$TEMPLATE_CMD" $microservice \"$(pwd)/charts/interop-eks-microservice-chart\" -f \"$(pwd)/charts/interop-eks-microservice-chart/values.yaml\" -f \"$(pwd)/commons/$ENV/values-microservice.compiled.yaml\" -f \"$(pwd)/microservices/$microservice/$ENV/values.yaml\" $OUTPUT_TO"
 
 eval $TEMPLATE_CMD
+if [[ $verbose == true ]]; then
+  echo "Successfully created Helm Template for microservice $microservice at $OUTPUT_FILE"
+fi
 
 if [[ $output_redirect != "console" && $post_clean == true ]]; then
   rm -rf $OUT_DIR
