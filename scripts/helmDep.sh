@@ -45,6 +45,7 @@ function setupHelmDeps()
     untar=$1
     
     rm -rf charts
+
     echo "# Helm dependencies setup #"
     echo "-- Add PagoPA eks repos --"
     helm repo add interop-eks-microservice-chart https://pagopa.github.io/interop-eks-microservice-chart > /dev/null
@@ -74,6 +75,7 @@ function setupHelmDeps()
     if [[ $verbose == true ]]; then
         echo $dep_up_result
     fi
+
 
     if [[ $untar == true ]]; then
         cd charts

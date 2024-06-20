@@ -141,6 +141,7 @@ eval $TEMPLATE_CMD
 if [[ $verbose == true ]]; then
   echo "Successfully created Helm Template for cronjob $job at $OUTPUT_FILE"
 fi
+
 if [[ $output_redirect != "console" && $post_clean == true ]]; then
   rm -rf $OUT_DIR
 fi
