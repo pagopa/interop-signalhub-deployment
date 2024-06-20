@@ -25,6 +25,8 @@ jobs:
     name: Setup steps
     runs-on: [ self-hosted, "run_id:${{ inputs.environment }}-${{ github.run_id }}" ]
     environment: ${{ inputs.environment }}
+    env:
+      TARGET_ENVIRONMENT: ${{ inputs.environment }}
     outputs:
       microservices: ${{ steps.set-outputs.outputs.microservices }}
       cronjobs: ${{ steps.set-outputs.outputs.cronjobs }}
@@ -34,8 +36,8 @@ jobs:
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
       - id: set-outputs
         run: |
-          echo "microservices=$(ls microservices | jq -R -s -c 'split("\n")[:-1]')" >> "$GITHUB_OUTPUT"
-          echo "cronjobs=$(ls jobs | jq -R -s -c 'split("\n")[:-1]')" >> "$GITHUB_OUTPUT"
+          echo "microservices=$(find microservices -type f -path "*/$TARGET_ENVIRONMENT/values.yaml" -exec dirname {} \; | awk -F'/' '{print $2}' | jq -R -s -c 'split("\n")[:-1]')" >> "$GITHUB_OUTPUT"
+          echo "cronjobs=$(find jobs -type f -path "*/$TARGET_ENVIRONMENT/values.yaml" -exec dirname {} \; | awk -F'/' '{print $2}' | jq -R -s -c 'split("\n")[:-1]')" >> "$GITHUB_OUTPUT"
 
   diff_microservices:
     name: ${{ matrix.microservice }}
