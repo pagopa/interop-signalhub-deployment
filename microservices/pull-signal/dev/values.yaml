@@ -3,6 +3,7 @@ name: "signalhub-be-pull-signal"
 roleArn: "arn:aws:iam::058264553932:role/signalhub-be-pull-signal-dev"
 
 service:
+  portName: "http"
   containerPort: 8088
   targetGroupArn: "arn:aws:elasticloadbalancing:eu-south-1:058264553932:targetgroup/dev-pull-signal/e4ba4fd60b328edd"
 
@@ -13,6 +14,18 @@ configmap:
   QUEUE_PORT: "443"
 
 deployment:
+  livenessProbe:
+    httpGet:
+      path: "/status"
+      port: http
+    periodSeconds: 5
+    initialDelaySeconds: 15
+  readinessProbe:
+    httpGet:
+      path: "/status"
+      port: http
+    periodSeconds: 5
+    initialDelaySeconds: 15
   env:
     HOST: ""
     PORT: ""
