@@ -4,7 +4,8 @@ techStack: "nodejs"
 
 roleArn: "arn:aws:iam::058264553932:role/signalhub-be-batch-update-dev"
 
-schedule: ""
+schedule: "* * * * *"
+suspend: true
 
 deployment:
   env:
