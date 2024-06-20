@@ -1,4 +1,4 @@
-name: K8s Apply (sub)
+name: K8S Apply (sub)
 
 on: 
   workflow_call:

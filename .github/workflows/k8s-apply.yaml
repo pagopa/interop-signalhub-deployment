@@ -1,6 +1,18 @@
-name: DEV - K8s Apply
+name: K8s Apply
 
-on: workflow_dispatch
+on: 
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+        - dev
+        - dev-helm
+        - dev-refactor
+        - qa
 
 permissions:
   id-token: write
@@ -10,7 +22,7 @@ jobs:
   create_runner:
     name: Create Self-Hosted Runner
     runs-on: ubuntu-22.04
-    environment: dev
+    environment: ${{ inputs.environment }}
     outputs:
       ecs_task_id: ${{ steps.start_runner.outputs.ecs_task_id }}
     strategy:
@@ -33,14 +45,14 @@ jobs:
           ecs_task_sec_group: ${{ secrets.SEC_GROUP_ID }}
           ecs_task_max_duration_seconds: ${{ vars.ECS_TASK_MAX_DURATION_SECONDS }}
           pat_token: ${{ secrets.BOT_TOKEN }}
-          environment: dev
+          environment: ${{ inputs.environment }}
 
   deploy:
     needs: [ create_runner ]
     secrets: inherit
-    uses: ./.github/workflows/pr-validation-sub-single-apply.yaml
+    uses: ./.github/workflows/k8s-apply-sub.yaml
     with:
-      environment: dev
+      environment: ${{ inputs.environment }}
       timeout_seconds: 180
 
   delete_runner:
@@ -48,7 +60,7 @@ jobs:
     needs: [create_runner, deploy]
     if: ${{ always() }}
     runs-on: ubuntu-22.04
-    environment: dev
+    environment: ${{ inputs.environment }}
     strategy:
       matrix:
         index: [1,2,3]
@@ -62,4 +74,4 @@ jobs:
           iam_role_arn: ${{ secrets.ECS_IAM_ROLE_ARN }}
           ecs_cluster_name: ${{ secrets.ECS_CLUSTER_NAME }}
           pat_token: ${{ secrets.BOT_TOKEN }}
-          environment: dev  
+          environment: ${{ inputs.environment }}
