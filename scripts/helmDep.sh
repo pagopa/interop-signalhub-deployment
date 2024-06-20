@@ -5,7 +5,8 @@ help()
 {
     echo "Usage: 
         [ -u | --untar ] Untar downloaded charts
-        [ -h | --help ] This help"
+        [ -v | --verbose ] Show debug messages
+        [ -h | --help ] This help" 
     exit 2
 }
 
@@ -13,12 +14,18 @@ help()
 args=$#
 untar=false
 step=1
+verbose=false
 
 for (( i=0; i<$args; i+=$step ))
 do
     case "$1" in
         -u| --untar )
           untar=true
+          step=1
+          shift 1
+          ;;
+        -v| --verbose )
+          verbose=true
           step=1
           shift 1
           ;;
@@ -39,26 +46,36 @@ function setupHelmDeps()
     
     rm -rf charts
 
-    echo "-- Add repo --"
-    helm repo add interop-eks-microservice-chart https://pagopa.github.io/interop-eks-microservice-chart
-    helm repo add interop-eks-cronjob-chart https://pagopa.github.io/interop-eks-cronjob-chart
+    echo "# Helm dependencies setup #"
+    echo "-- Add PagoPA eks repos --"
+    helm repo add interop-eks-microservice-chart https://pagopa.github.io/interop-eks-microservice-chart > /dev/null
+    helm repo add interop-eks-cronjob-chart https://pagopa.github.io/interop-eks-cronjob-chart > /dev/null
 
-    echo "-- Update repo --"
-    helm repo update interop-eks-microservice-chart
-    helm repo update interop-eks-cronjob-chart
+    echo "-- Update PagoPA eks repo --"
+    helm repo update interop-eks-microservice-chart > /dev/null
+    helm repo update interop-eks-cronjob-chart > /dev/null
 
-    echo "-- Search charts in repo --"
-    helm search repo interop-eks-microservice-chart
-    helm search repo interop-eks-cronjob-chart
+    if [[ $verbose == true ]]; then
+        echo "-- Search PagoPA charts in repo --"
+    fi
+    helm search repo interop-eks-microservice-chart > /dev/null
+    helm search repo interop-eks-cronjob-chart > /dev/null
 
-    echo "-- List chart dependencies --"
-    helm dependency list
-    echo "-- Build chart dependencies --"
+    if [[ $verbose == true ]]; then
+        echo "-- List chart dependencies --"
+    fi
+    helm dep list | awk '{printf "%-35s %-15s %-20s\n", $1, $2, $3}'
+    
+    if [[ $verbose == true ]]; then
+        echo "-- Build chart dependencies --"
+    fi
     # only first time
-    # todo
-    helm dep up 
     #helm dep build 
-    # echo "-- Update chart dependencies --"
+    dep_up_result=$(helm dep up)
+    if [[ $verbose == true ]]; then
+        echo $dep_up_result
+    fi
+
 
     if [[ $untar == true ]]; then
         cd charts
@@ -69,7 +86,7 @@ function setupHelmDeps()
         cd ..
     fi
 
-    echo "-- Dependency setup ended --"
+    echo "-- Helm dependencies setup ended --"
     exit 0
 }
 

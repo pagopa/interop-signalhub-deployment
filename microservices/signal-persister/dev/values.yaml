@@ -4,7 +4,6 @@ roleArn: "arn:aws:iam::058264553932:role/signalhub-be-signal-persister-dev"
 
 service:
   create: false
-  containerPort: 8080
   
 configmap:
   QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/058264553932/signalhub-push-signal-dev"
