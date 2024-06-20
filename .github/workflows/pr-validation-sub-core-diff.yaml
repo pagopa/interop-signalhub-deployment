@@ -78,7 +78,7 @@ jobs:
           if [[ $DIFF_EXIT_CODE == 0 ]]; then
             echo "::notice title=Diff Output::No diff has been found"
           elif [[ $DIFF_EXIT_CODE == 1 ]]; then
-            echo "::warning title=Diff Output::Diff has been found"
+            echo "::notice title=Diff Output::Diff has been found"
             
             touch microservices_${MICROSERVICE_NAME}_diff.txt
             echo $MICROSERVICE_NAME >> microservices_${MICROSERVICE_NAME}_diff.txt
@@ -134,7 +134,7 @@ jobs:
           if [[ $DIFF_EXIT_CODE == 0 ]]; then
             echo "::notice title=Diff Output::No diff has been found"
           elif [[ $DIFF_EXIT_CODE == 1 ]]; then
-            echo "::warning title=Diff Output::Diff has been found"
+            echo "::notice title=Diff Output::Diff has been found"
             
             touch cronjobs_${CRONJOB_NAME}_diff.txt
             echo $CRONJOB_NAME >> cronjobs_${CRONJOB_NAME}_diff.txt
