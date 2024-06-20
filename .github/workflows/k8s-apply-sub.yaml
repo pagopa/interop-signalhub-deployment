@@ -46,17 +46,10 @@ jobs:
         run: |
           set -euo pipefail
           
-          commons_scala_configmaps_path="commons/$ENVIRONMENT/scala"
-          commons_nodejs_configmaps_path="commons/$ENVIRONMENT/nodejs"
+          commons_configmaps_path="commons/$ENVIRONMENT/configmaps"
           
-          if [ -n "$(ls -A $commons_scala_configmaps_path)" ]; then
-            for f in $commons_scala_configmaps_path/*; do
-              kubectl apply -f $f
-            done;
-          fi
-            
-          if [ -n "$(ls -A $commons_nodejs_configmaps_path)" ]; then
-            for f in $commons_nodejs_configmaps_path/*; do
+          if [ -n "$(ls -A $commons_configmaps_path)" ]; then
+            for f in $commons_configmaps_path/*; do
               kubectl apply -f $f
             done;
           fi
