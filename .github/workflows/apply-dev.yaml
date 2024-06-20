@@ -1,4 +1,4 @@
-name: DEV - PR K8s Apply
+name: DEV - K8s Apply
 
 on: workflow_dispatch
 
