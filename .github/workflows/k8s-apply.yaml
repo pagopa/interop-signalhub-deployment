@@ -10,9 +10,6 @@ on:
         type: choice
         options:
         - dev
-        - dev-helm
-        - dev-refactor
-        - qa
 
 permissions:
   id-token: write
