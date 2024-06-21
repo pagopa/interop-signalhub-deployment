@@ -10,9 +10,6 @@ service:
 configmap:
   ACCEPTED_AUDIENCE: "TODO"
   QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/058264553932/signalhub-push-signal-dev"
-  QUEUE_ENDPOINT: "https://sqs.eu-south-1.amazonaws.com"
-  QUEUE_NAME: "signalhub-push-signal-dev"
-  QUEUE_PORT: "443"
 
 deployment:
   env:
