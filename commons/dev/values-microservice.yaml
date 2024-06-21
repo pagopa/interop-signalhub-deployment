@@ -9,10 +9,9 @@ image:
   tag: $IMAGE_TAG_PLACEHOLDER
   digest: $IMAGE_DIGEST_PLACEHOLDER
 
-
 deployment:
-  host: "0.0.0.0"
-  logLevel: "info"
+  env:
+    LOG_LEVEL: "info"
 
 resources:
   requests:

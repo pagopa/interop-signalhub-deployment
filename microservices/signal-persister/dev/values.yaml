@@ -21,4 +21,5 @@ deployment:
   envFromSecrets:
     SH_DB_USERNAME: "signal-store-signal-persister-user.username"
     SH_DB_PASSWORD: "signal-store-signal-persister-user.password"
-
+  livenessProbe:
+  readinessProbe:

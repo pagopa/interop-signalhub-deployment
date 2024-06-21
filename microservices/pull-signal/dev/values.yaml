@@ -3,6 +3,7 @@ name: "signalhub-be-pull-signal"
 roleArn: "arn:aws:iam::058264553932:role/signalhub-be-pull-signal-dev"
 
 service:
+  portName: http
   containerPort: 8088
   targetGroupArn: "arn:aws:elasticloadbalancing:eu-south-1:058264553932:targetgroup/dev-pull-signal/e4ba4fd60b328edd"
 
@@ -14,8 +15,8 @@ configmap:
 
 deployment:
   env:
-    HOST: ""
-    PORT: ""
+    HOST: "0.0.0.0"
+    PORT: 8088
   envFromConfigmaps:
     SH_DB_HOST: "common-signal-store.SH_DB_HOST"
     SH_DB_NAME: "common-signal-store.SH_DB_NAME"
@@ -25,6 +26,18 @@ deployment:
   envFromSecrets:
     SH_DB_USERNAME: "signal-store-pull-signal-user.username"
     SH_DB_PASSWORD: "signal-store-pull-signal-user.password"
+  livenessProbe:
+    httpGet:
+      path: "/status"
+      port: http
+    periodSeconds: 5
+    initialDelaySeconds: 15
+  readinessProbe:
+    httpGet:
+      path: "/status"
+      port: http
+    periodSeconds: 5
+    initialDelaySeconds: 15
 
 
     
