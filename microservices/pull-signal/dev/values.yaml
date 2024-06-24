@@ -21,7 +21,7 @@ configmap:
   CLIENT_ID: "725ae6e6-8ae0-41d4-bceb-d995a74356ef"
   GRANT_TYPE: "client_credentials"
   ASSERTION_TYPE: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
-  EXPIRES_IN_SEC: 3600
+  EXPIRES_IN_SEC: "3600"
   GATEWAY_URL: "https://api.dev.interop.pagopa.it/0.0"
 
 deployment:
