@@ -29,6 +29,7 @@ deployment:
     HOST: "0.0.0.0"
     PORT: 8088
   envFromConfigmaps:
+    WELL_KNOWN_URL: "common-jwt.WELL_KNOWN_URL"
     SH_DB_HOST: "common-signal-store.SH_DB_HOST"
     SH_DB_NAME: "common-signal-store.SH_DB_NAME"
     SH_DB_PORT: "common-signal-store.SH_DB_PORT"
@@ -49,4 +50,3 @@ deployment:
       port: http
     periodSeconds: 5
     initialDelaySeconds: 15
-  
