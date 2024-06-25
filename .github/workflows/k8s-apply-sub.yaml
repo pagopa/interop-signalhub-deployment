@@ -106,6 +106,7 @@ jobs:
           
           CURRENT_DATE_SECONDS=$(date +%s)
           WAIT_EXP_SECONDS=$(($CURRENT_DATE_SECONDS + $MAX_WAIT_TIME_SECONDS))
+          SVC_ROLLOUT_STATUS=1
 
           while [[ $CURRENT_DATE_SECONDS -lt $WAIT_EXP_SECONDS ]]
           do
@@ -124,6 +125,8 @@ jobs:
             sleep $CYCLE_SLEEP_SECONDS
             CURRENT_DATE_SECONDS=$(date +%s)
           done
+
+          exit $SVC_ROLLOUT_STATUS
 
   deploy_cj:
     name: ${{ matrix.cronjob }}
