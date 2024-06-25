@@ -89,6 +89,7 @@ if [[ -z $job || $job == "" ]]; then
 fi
 if [[ $skip_dep == false ]]; then
   bash $SCRIPTS_FOLDER/helmDep.sh
+  skip_dep=true
 fi
 
 VALID_CONFIG=$(isCronjobEnvConfigValid $job $environment)
@@ -104,6 +105,11 @@ if [[ $enable_debug == true ]]; then
 fi
 if [[ -n $output_redirect ]]; then
   OPTIONS=$OPTIONS" -o $output_redirect"
+else
+  OPTIONS=$OPTIONS" -o console "
+fi
+if [[ $skip_dep == true ]]; then
+  OPTIONS=$OPTIONS" -sd "
 fi
 
 HELM_TEMPLATE_CMD="$SCRIPTS_FOLDER/helmTemplate-cron-single.sh -e $ENV -j $job $OPTIONS"

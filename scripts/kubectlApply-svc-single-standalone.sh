@@ -89,6 +89,7 @@ if [[ -z $microservice || $microservice == "" ]]; then
 fi
 if [[ $skip_dep == false ]]; then
   bash $SCRIPTS_FOLDER/helmDep.sh
+  skip_dep=true
 fi
 
 VALID_CONFIG=$(isMicroserviceEnvConfigValid $microservice $environment)
@@ -98,12 +99,17 @@ if [[ -z $VALID_CONFIG || $VALID_CONFIG == "" ]]; then
 fi
 
 ENV=$environment
-OPTIONS=" -o console "
+OPTIONS=" "
 if [[ $enable_debug == true ]]; then
   OPTIONS=$OPTIONS" -d"
 fi
 if [[ -n $output_redirect ]]; then
   OPTIONS=$OPTIONS" -o $output_redirect"
+else
+  OPTIONS=$OPTIONS" -o console "
+fi
+if [[ $skip_dep == true ]]; then
+  OPTIONS=$OPTIONS" -sd "
 fi
 
 HELM_TEMPLATE_CMD="$SCRIPTS_FOLDER/helmTemplate-svc-single.sh -e $ENV -m $microservice $OPTIONS"
