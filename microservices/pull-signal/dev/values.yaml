@@ -10,7 +10,7 @@ service:
 configmap:
   ACCEPTED_AUDIENCE: "interop-signalhub-pull-signal"
   QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/058264553932/signalhub-push-signal-dev"
-  KEY_ID: "QDHfVY8aq2m7rX0WZkaIcrsYv9cdzQZY1ci245d-h5E"
+  KEY_ID: "0jsvLoiKfoL5p5LuovKFgsB945eHsocHkrtt5-P0cYY"
   KMS_KEY_ID: "2139e931-fe83-45ee-94a8-cf8fe5b494f1"
   KMS_REGION: "eu-south-1"
   SUBJECT: "725ae6e6-8ae0-41d4-bceb-d995a74356ef"
