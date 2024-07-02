@@ -4,7 +4,7 @@ techStack: "nodejs"
 
 schedule: "30 * * * *"
 
-configMap:
+configmap:
   KEY_ID: "0jsvLoiKfoL5p5LuovKFgsB945eHsocHkrtt5-P0cYY"
   KMS_KEY_ID: "2139e931-fe83-45ee-94a8-cf8fe5b494f1"
   SUBJECT: "725ae6e6-8ae0-41d4-bceb-d995a74356ef"
