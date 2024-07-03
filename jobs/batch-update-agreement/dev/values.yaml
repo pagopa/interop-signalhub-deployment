@@ -1,4 +1,7 @@
-name: "signalhub-be-batch-wrong-update"
+name: "signalhub-be-batch-agreement-update"
+
+image: 
+  repositoryName: "signalhub-be-batch-update"
 
 techStack: "nodejs"
 
