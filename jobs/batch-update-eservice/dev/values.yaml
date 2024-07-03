@@ -1,6 +1,8 @@
 name: "signalhub-be-batch-eservice-update"
 
-image: 
+roleArn: "arn:aws:iam::058264553932:role/signalhub-be-batch-update-dev"
+
+image:
   repositoryName: "signalhub-be-batch-update"
 
 techStack: "nodejs"
