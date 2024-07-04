@@ -1,4 +1,4 @@
 * @micdes-pagopa 
-commons/** @paolomanca-pagopa
-microservices/** @paolomanca-pagopa
-jobs/** @paolomanca-pagopa
+commons/** @micdes-pagopa @paolomanca-pagopa
+microservices/** @micdes-pagopa @paolomanca-pagopa
+jobs/** @micdes-pagopa @paolomanca-pagopa
