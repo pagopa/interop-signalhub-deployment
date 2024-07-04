@@ -9,9 +9,8 @@ techStack: "nodejs"
 
 schedule: "0 * * * *"
 
-spec:
-  concurrencyPolicy: "Forbid"
-  activeDeadlineSeconds: null
+concurrencyPolicy: "Forbid"
+activeDeadlineSeconds: null
 
 configmap:
   KEY_ID: "0jsvLoiKfoL5p5LuovKFgsB945eHsocHkrtt5-P0cYY"
