@@ -7,7 +7,7 @@ image:
 
 techStack: "nodejs"
 
-schedule: "0 * * * *"
+schedule: "*/5 * * * *"
 
 concurrencyPolicy: "Forbid"
 activeDeadlineSeconds: null
