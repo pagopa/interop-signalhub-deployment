@@ -8,6 +8,19 @@ data:
     CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_interop";
     CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_signalhub";
 
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_interop" TO
+      batch_cleanup_user,
+      batch_update_user,
+      pull_signal_user,
+      push_signal_user,
+      signal_persister_user;
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_signalhub" TO
+      batch_cleanup_user,
+      batch_update_user,
+      pull_signal_user,
+      push_signal_user,
+      signal_persister_user;
+
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_interop"."eservice" (
       eservice_id     VARCHAR (255) NOT NULL,
       descriptor_id   VARCHAR (255) NOT NULL,
