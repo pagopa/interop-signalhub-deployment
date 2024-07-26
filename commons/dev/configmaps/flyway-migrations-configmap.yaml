@@ -24,6 +24,11 @@ data:
     );
     CREATE INDEX IF NOT EXISTS eservice_index_id_and_producer_and_state ON "${NAMESPACE}_interop"."eservice"(eservice_id, producer_id, state);
 
+    GRANT SELECT ON TABLE "${NAMESPACE}_interop".eservice TO pull_signal_user;
+    GRANT SELECT ON TABLE "${NAMESPACE}_interop".eservice TO signal_persister_user;
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".eservice TO batch_update_user;
+    GRANT SELECT ON TABLE "${NAMESPACE}_interop".eservice TO push_signal_user;
+
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_interop"."agreement" (
         agreement_id    VARCHAR (255) NOT NULL,
         eservice_id     VARCHAR (255) NOT NULL,
@@ -40,6 +45,11 @@ data:
         PRIMARY KEY (agreement_id)
     );
     CREATE INDEX IF NOT EXISTS agreement_index_eservice_and_consumer_and_state ON "${NAMESPACE}_interop"."agreement"(eservice_id, consumer_id, state);
+
+    GRANT SELECT ON TABLE "${NAMESPACE}_interop".agreement TO pull_signal_user;
+    GRANT SELECT ON TABLE "${NAMESPACE}_interop".agreement TO signal_persister_user;
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".agreement TO batch_update_user;
+    GRANT SELECT ON TABLE "${NAMESPACE}_interop".agreement TO push_signal_user;
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_interop"."purpose" (
         purpose_id       VARCHAR (255) NOT NULL,
@@ -58,6 +68,11 @@ data:
     );
     CREATE INDEX IF NOT EXISTS purpose_index_eservice_and_consumer_and_state ON "${NAMESPACE}_interop"."purpose"(purpose_id, consumer_id, purpose_state, eservice_id);
 
+    GRANT SELECT ON TABLE "${NAMESPACE}_interop".purpose TO pull_signal_user;
+    GRANT SELECT ON TABLE "${NAMESPACE}_interop".purpose TO signal_persister_user;
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".purpose TO batch_update_user;
+    GRANT SELECT ON TABLE "${NAMESPACE}_interop".purpose TO push_signal_user;
+
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_interop"."tracing_batch" (
         batch_id         SERIAL PRIMARY KEY,
         state            VARCHAR (255) NOT NULL,
@@ -65,6 +80,9 @@ data:
         last_event_id    BIGINT,
         tmst_created     TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
     );
+
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".tracing_batch TO batch_update_user;
+    GRANT SELECT, USAGE ON SEQUENCE "${NAMESPACE}_interop".tracing_batch_batch_id_seq TO batch_update_user;
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_interop"."dead_event" (
         event_tmp_id        SERIAL PRIMARY KEY,
@@ -78,6 +96,9 @@ data:
         agreement_id        VARCHAR (255)
     );
 
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".dead_event TO batch_update_user;
+    GRANT SELECT, USAGE ON SEQUENCE "${NAMESPACE}_interop".dead_event_event_tmp_id_seq TO batch_update_user;
+
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_signalhub"."signal" (
         id             SERIAL PRIMARY KEY,
         correlation_id VARCHAR(255) NOT NULL,
@@ -89,9 +110,15 @@ data:
         tmst_insert    TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
         UNIQUE (signal_id, eservice_id)
     );
-
     CREATE INDEX IF NOT exists signal_index_signal_id ON "${NAMESPACE}_signalhub"."signal" USING hash (signal_id);
     CREATE INDEX IF NOT exists signal_index_eservice_id on "${NAMESPACE}_signalhub"."signal" USING hash (eservice_id);
+
+    GRANT SELECT ON TABLE "${NAMESPACE}_signalhub".signal TO pull_signal_user;
+    GRANT SELECT, UPDATE, INSERT ON TABLE "${NAMESPACE}_signalhub".signal TO signal_persister_user;
+    GRANT SELECT, DELETE ON TABLE "${NAMESPACE}_signalhub".signal TO batch_cleanup_user;
+    GRANT SELECT ON TABLE "${NAMESPACE}_signalhub".signal TO push_signal_user;
+
+    GRANT USAGE ON SEQUENCE "${NAMESPACE}_signalhub".signal_id_seq TO signal_persister_user;
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_signalhub"."dead_signal" (
         id             SERIAL PRIMARY KEY,
@@ -105,6 +132,9 @@ data:
         error_reason   VARCHAR(255)  NOT NULL
     );
 
+    GRANT SELECT, UPDATE, INSERT ON TABLE "${NAMESPACE}_signalhub".dead_signal TO signal_persister_user;
+    GRANT USAGE ON SEQUENCE "${NAMESPACE}_signalhub".dead_signal_id_seq TO signal_persister_user;
+
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_signalhub"."tracing_batch_cleanup" (
         batch_id         SERIAL PRIMARY KEY,
         tmst_start_at    TIMESTAMPTZ,
@@ -113,3 +143,6 @@ data:
         tmst_delete_from TIMESTAMPTZ,
         count_deleted    BIGINT
     );
+
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_signalhub".tracing_batch_cleanup TO batch_cleanup_user;
+    GRANT SELECT, USAGE ON SEQUENCE "${NAMESPACE}_signalhub".tracing_batch_cleanup_batch_id_seq TO batch_cleanup_user;
