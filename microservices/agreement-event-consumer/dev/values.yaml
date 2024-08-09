@@ -4,6 +4,7 @@ roleArn: "arn:aws:iam::058264553932:role/signalhub-be-agreement-event-consumer-d
 
 configmap:
   KAFKA_GROUP_ID: "signalhub-dev-agreement-event-consumer"
+  TOPIC_STARTING_OFFSET: "earliest"
 
 deployment:
   envFromConfigmaps:
