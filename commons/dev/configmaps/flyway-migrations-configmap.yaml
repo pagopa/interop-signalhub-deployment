@@ -33,7 +33,7 @@ data:
       PRIMARY KEY (eservice_id)
     );
 
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".eservice_producer TO batch_update_user;
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".eservice_producer TO eservice_consumer_user;
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_interop"."eservice" (
       eservice_id     VARCHAR (255) NOT NULL,
@@ -53,7 +53,7 @@ data:
 
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".eservice TO pull_signal_user;
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".eservice TO signal_persister_user;
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".eservice TO batch_update_user;
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".eservice TO eservice_consumer_user;
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".eservice TO push_signal_user;
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_interop"."agreement" (
@@ -75,7 +75,7 @@ data:
 
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".agreement TO pull_signal_user;
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".agreement TO signal_persister_user;
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".agreement TO batch_update_user;
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".agreement TO agreement_consumer_user;
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".agreement TO push_signal_user;
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_interop"."purpose" (
@@ -97,7 +97,7 @@ data:
 
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".purpose TO pull_signal_user;
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".purpose TO signal_persister_user;
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".purpose TO batch_update_user;
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".purpose TO purpose_consumer_user;
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".purpose TO push_signal_user;
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_interop"."tracing_batch" (
