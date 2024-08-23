@@ -1,0 +1,22 @@
+name: "signalhub-be-agreement-event-consumer"
+
+roleArn: "arn:aws:iam::058264553932:role/signalhub-be-agreement-event-consumer-dev"
+
+configmap:
+  KAFKA_GROUP_ID: "signalhub-dev-agreement-event-consumer"
+  TOPIC_STARTING_OFFSET: "earliest"
+
+deployment:
+  envFromConfigmaps:
+    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    KAFKA_TOPIC: "common-kafka.AGREEMENT_TOPIC"
+    SH_DB_HOST: "common-signal-store.SH_DB_HOST"
+    SH_DB_NAME: "common-signal-store.SH_DB_NAME"
+    SH_DB_PORT: "common-signal-store.SH_DB_PORT"
+    SH_DB_SCHEMA: "common-signal-store.SH_DB_SCHEMA"
+    SH_DB_USE_SSL: "common-signal-store.SH_DB_USE_SSL"
+  envFromFieldRef:
+    KAFKA_CLIENT_ID: "metadata.name"
+  envFromSecrets:   
+    SH_DB_USERNAME: "signal-store-agreement-consumer-user.username"
+    SH_DB_PASSWORD: "signal-store-agreement-consumer-user.password"
