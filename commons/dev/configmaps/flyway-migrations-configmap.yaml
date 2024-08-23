@@ -68,7 +68,6 @@ data:
         tmst_insert     TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
         tmst_last_edit  TIMESTAMPTZ,
         UNIQUE (event_stream_id, event_version_id),
-        UNIQUE (eservice_id, consumer_id, state),
         PRIMARY KEY (agreement_id)
     );
     CREATE INDEX IF NOT EXISTS agreement_index_eservice_and_consumer_and_state ON "${NAMESPACE}_interop"."agreement"(eservice_id, consumer_id, state);
