@@ -6,7 +6,7 @@ service:
   create: false
 
 configmap:
-  KAFKA_GROUP_ID: "signalhub-dev-eservice-event-consumer"
+  KAFKA_GROUP_ID: "signalhub-dev-catalog-event-consumer"
   TOPIC_STARTING_OFFSET: "earliest"
 
 deployment:
