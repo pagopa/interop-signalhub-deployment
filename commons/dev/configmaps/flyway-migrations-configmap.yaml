@@ -21,6 +21,20 @@ data:
       push_signal_user,
       signal_persister_user;
 
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_interop"."eservice_producer" (
+      eservice_id     VARCHAR (255) NOT NULL,
+      producer_id     VARCHAR (255) NOT NULL,
+      tmst_insert     TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+      event_stream_id VARCHAR (255) NOT NULL DEFAULT gen_random_uuid(),
+      event_version_id   BIGINT NOT NULL DEFAULT -1,
+      UNIQUE (event_stream_id, event_version_id),
+      UNIQUE (eservice_id, producer_id),
+      PRIMARY KEY (eservice_id)
+    );
+
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".eservice_producer TO eservice_consumer_user;
+
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_interop"."eservice" (
       eservice_id     VARCHAR (255) NOT NULL,
       descriptor_id   VARCHAR (255) NOT NULL,
@@ -31,7 +45,7 @@ data:
       event_version_id   BIGINT NOT NULL DEFAULT -1,
       tmst_insert     TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
       tmst_last_edit  TIMESTAMPTZ,
-      UNIQUE (event_stream_id, event_version_id),
+      UNIQUE (event_stream_id, event_version_id, descriptor_id),
       UNIQUE (eservice_id, descriptor_id, producer_id),
       PRIMARY KEY (eservice_id, descriptor_id)
     );
@@ -39,7 +53,7 @@ data:
 
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".eservice TO pull_signal_user;
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".eservice TO signal_persister_user;
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".eservice TO batch_update_user;
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".eservice TO eservice_consumer_user;
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".eservice TO push_signal_user;
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_interop"."agreement" (
@@ -54,19 +68,18 @@ data:
         tmst_insert     TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
         tmst_last_edit  TIMESTAMPTZ,
         UNIQUE (event_stream_id, event_version_id),
-        UNIQUE (eservice_id, descriptor_id, consumer_id),
         PRIMARY KEY (agreement_id)
     );
     CREATE INDEX IF NOT EXISTS agreement_index_eservice_and_consumer_and_state ON "${NAMESPACE}_interop"."agreement"(eservice_id, consumer_id, state);
 
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".agreement TO pull_signal_user;
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".agreement TO signal_persister_user;
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".agreement TO batch_update_user;
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".agreement TO agreement_consumer_user;
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".agreement TO push_signal_user;
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_interop"."purpose" (
         purpose_id       VARCHAR (255) NOT NULL,
-        purpose_version_id  VARCHAR (255) NOT NULL,
+        purpose_version_id  VARCHAR (255),
         purpose_state    VARCHAR (255) NOT NULL,
         eservice_id     VARCHAR (255) NOT NULL,
         consumer_id     VARCHAR (255) NOT NULL,
@@ -77,13 +90,13 @@ data:
         tmst_last_edit  TIMESTAMPTZ,
         UNIQUE (event_stream_id, event_version_id),
         UNIQUE (purpose_id, eservice_id, consumer_id),
-        PRIMARY KEY (purpose_id, purpose_version_id)
+        PRIMARY KEY (purpose_id)
     );
     CREATE INDEX IF NOT EXISTS purpose_index_eservice_and_consumer_and_state ON "${NAMESPACE}_interop"."purpose"(purpose_id, consumer_id, purpose_state, eservice_id);
 
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".purpose TO pull_signal_user;
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".purpose TO signal_persister_user;
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".purpose TO batch_update_user;
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".purpose TO purpose_consumer_user;
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".purpose TO push_signal_user;
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_interop"."tracing_batch" (
