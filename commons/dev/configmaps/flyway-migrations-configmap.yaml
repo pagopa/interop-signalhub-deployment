@@ -10,13 +10,15 @@ data:
 
     GRANT USAGE ON SCHEMA "${NAMESPACE}_interop" TO
       batch_cleanup_user,
-      batch_update_user,
       pull_signal_user,
       push_signal_user,
-      signal_persister_user;
+      signal_persister_user,
+      eservice_consumer_user,
+      agreement_consumer_user,
+      purpose_consumer_user;
+      
     GRANT USAGE ON SCHEMA "${NAMESPACE}_signalhub" TO
       batch_cleanup_user,
-      batch_update_user,
       pull_signal_user,
       push_signal_user,
       signal_persister_user;
@@ -98,32 +100,6 @@ data:
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".purpose TO signal_persister_user;
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".purpose TO purpose_consumer_user;
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".purpose TO push_signal_user;
-
-    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_interop"."tracing_batch" (
-        batch_id         SERIAL PRIMARY KEY,
-        state            VARCHAR (255) NOT NULL,
-        type             VARCHAR (50) NOT NULL,
-        last_event_id    BIGINT,
-        tmst_created     TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-    );
-
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".tracing_batch TO batch_update_user;
-    GRANT SELECT, USAGE ON SEQUENCE "${NAMESPACE}_interop".tracing_batch_batch_id_seq TO batch_update_user;
-
-    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_interop"."dead_event" (
-        event_tmp_id        SERIAL PRIMARY KEY,
-        tmst_insert         TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-        error_reason        VARCHAR(255) NOT NULL,
-        event_id            BIGINT NOT NULL,
-        event_type          VARCHAR (255) NOT NULL,
-        object_type         VARCHAR (255) NOT NULL,
-        descriptor_id       VARCHAR (255),
-        eservice_id         VARCHAR (255),
-        agreement_id        VARCHAR (255)
-    );
-
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".dead_event TO batch_update_user;
-    GRANT SELECT, USAGE ON SEQUENCE "${NAMESPACE}_interop".dead_event_event_tmp_id_seq TO batch_update_user;
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_signalhub"."signal" (
         id             SERIAL PRIMARY KEY,
