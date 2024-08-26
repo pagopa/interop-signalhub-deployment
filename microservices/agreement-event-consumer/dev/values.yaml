@@ -17,6 +17,7 @@ deployment:
     SH_DB_USE_SSL: "common-signal-store.SH_DB_USE_SSL"
   envFromFieldRef:
     KAFKA_CLIENT_ID: "metadata.name"
+    AWS_ROLE_SESSION_NAME: "metadata.name"
   envFromSecrets:   
     SH_DB_USERNAME: "signal-store-agreement-consumer-user.username"
     SH_DB_PASSWORD: "signal-store-agreement-consumer-user.password"
