@@ -7,5 +7,6 @@ data:
   SH_DB_HOST: "signalhub-signal-store-dev.cluster-c9ee68q8ss2g.eu-south-1.rds.amazonaws.com"
   SH_DB_NAME: "signal_store"
   SH_DB_PORT: "5432"
-  SH_DB_SCHEMA: "dev_signalhub"
+  SH_DB_SIGNALHUB_SCHEMA: "dev_signalhub"
+  SH_DB_INTEROP_SCHEMA: "dev_interop"
   SH_DB_USE_SSL: "true"
