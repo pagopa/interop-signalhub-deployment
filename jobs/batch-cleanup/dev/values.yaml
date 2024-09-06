@@ -8,7 +8,7 @@ concurrencyPolicy: "Forbid"
 activeDeadlineSeconds: null
 
 configmap:
-  SIGNALS_RETENTION_HOURS: "12"
+  SIGNALS_RETENTION_HOURS: "336"
 
 job:
   env:
