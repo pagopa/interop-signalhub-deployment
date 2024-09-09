@@ -4,9 +4,10 @@ metadata:
   name: common-signal-store
   namespace: dev
 data:
-  SH_DB_HOST: "signalhub-signal-store-dev.cluster-c9ee68q8ss2g.eu-south-1.rds.amazonaws.com"
-  SH_DB_NAME: "signal_store"
-  SH_DB_PORT: "5432"
-  SH_DB_SIGNALHUB_SCHEMA: "DEV_SIGNALHUB"
-  SH_DB_INTEROP_SCHEMA: "DEV_INTEROP"
-  SH_DB_USE_SSL: "true"
+  DB_HOST_RW: "signalhub-signal-store-dev.cluster-c9ee68q8ss2g.eu-south-1.rds.amazonaws.com"
+  DB_HOST_RO: "signalhub-signal-store-dev.cluster-ro-c9ee68q8ss2g.eu-south-1.rds.amazonaws.com"
+  DB_NAME: "signal_store"
+  DB_PORT: "5432"
+  DB_SIGNALHUB_SCHEMA: "DEV_SIGNALHUB"
+  DB_INTEROP_SCHEMA: "DEV_INTEROP"
+  DB_USE_SSL: "true"
