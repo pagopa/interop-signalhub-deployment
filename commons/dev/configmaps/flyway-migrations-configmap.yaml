@@ -23,79 +23,67 @@ data:
       push_signal_user,
       signal_persister_user;
 
-
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_interop"."eservice_producer" (
-      eservice_id     VARCHAR (255) NOT NULL,
-      producer_id     VARCHAR (255) NOT NULL,
-      tmst_insert     TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-      event_stream_id VARCHAR (255) NOT NULL DEFAULT gen_random_uuid(),
-      event_version_id   BIGINT NOT NULL DEFAULT -1,
-      UNIQUE (event_stream_id, event_version_id),
-      UNIQUE (eservice_id, producer_id),
-      PRIMARY KEY (eservice_id)
+        eservice_id     VARCHAR (255) PRIMARY KEY,
+        producer_id     VARCHAR (255) NOT NULL,
+        tmst_insert     TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+        event_stream_id VARCHAR (255) NOT NULL DEFAULT gen_random_uuid(),
+        event_version_id BIGINT NOT NULL DEFAULT -1
     );
-
+    CREATE UNIQUE INDEX IF NOT EXISTS IDX_ESERVICE_PRODUCER_ON_EVENT_STREAM_ID_VERSION_ID  ON "${NAMESPACE}_interop"."eservice_producer"(event_stream_id, event_version_id);
+    CREATE UNIQUE INDEX IF NOT EXISTS IDX_ESERVICE_PRODUCER_ON_ESERVICE_ID_PRODUCER_ID  ON "${NAMESPACE}_interop"."eservice_producer"(eservice_id, producer_id);
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".eservice_producer TO eservice_consumer_user;
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_interop"."eservice" (
-      eservice_id     VARCHAR (255) NOT NULL,
-      descriptor_id   VARCHAR (255) NOT NULL,
-      producer_id     VARCHAR (255) NOT NULL,
-      state           VARCHAR (255) NOT NULL,
-      event_id        BIGINT DEFAULT -1,
-      event_stream_id VARCHAR (255) NOT NULL DEFAULT gen_random_uuid(),
-      event_version_id   BIGINT NOT NULL DEFAULT -1,
-      tmst_insert     TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-      tmst_last_edit  TIMESTAMPTZ,
-      UNIQUE (event_stream_id, event_version_id, descriptor_id),
-      UNIQUE (eservice_id, descriptor_id, producer_id),
-      PRIMARY KEY (eservice_id, descriptor_id)
+        eservice_id       VARCHAR (255) NOT NULL,
+        descriptor_id     VARCHAR (255) NOT NULL,
+        producer_id       VARCHAR (255) NOT NULL,
+        "state"           VARCHAR (255) NOT NULL,
+        event_stream_id   VARCHAR (255) NOT NULL DEFAULT gen_random_uuid(),
+        event_version_id  BIGINT NOT NULL DEFAULT -1,
+        tmst_insert       TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+        tmst_last_edit    TIMESTAMPTZ,
+        PRIMARY KEY (eservice_id, descriptor_id)
     );
-    CREATE INDEX IF NOT EXISTS eservice_index_id_and_producer_and_state ON "${NAMESPACE}_interop"."eservice"(eservice_id, producer_id, state);
-
+    CREATE UNIQUE INDEX IF NOT EXISTS IDX_ESERVICE_ON_EVENT_STREAM_ID_VERSION_ID_DESCRIPTOR_ID  ON "${NAMESPACE}_interop"."eservice"(event_stream_id, event_version_id, descriptor_id);
+    CREATE UNIQUE INDEX IF NOT EXISTS IDX_ESERVICE_ON_ESERVICE_DESCRIPTOR_PRODUCER ON "${NAMESPACE}_interop"."eservice"(eservice_id, descriptor_id, producer_id);
+    CREATE INDEX IF NOT EXISTS IDX_ESERVICE_ON_ESERVICE_ID_AND_PRODUCER_AND_STATE ON "${NAMESPACE}_interop"."eservice"(eservice_id, producer_id, upper(state));
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".eservice TO pull_signal_user;
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".eservice TO signal_persister_user;
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".eservice TO eservice_consumer_user;
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".eservice TO push_signal_user;
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_interop"."agreement" (
-        agreement_id    VARCHAR (255) NOT NULL,
-        eservice_id     VARCHAR (255) NOT NULL,
-        descriptor_id   VARCHAR (255) NOT NULL,
-        consumer_id     VARCHAR (255) NOT NULL,
-        state           VARCHAR (255) NOT NULL,
-        event_id        BIGINT DEFAULT -1,
-        event_stream_id VARCHAR (255) NOT NULL DEFAULT gen_random_uuid(),
-        event_version_id   BIGINT NOT NULL DEFAULT -1,
-        tmst_insert     TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-        tmst_last_edit  TIMESTAMPTZ,
-        UNIQUE (event_stream_id, event_version_id),
-        PRIMARY KEY (agreement_id)
+        agreement_id      VARCHAR (255) PRIMARY KEY,
+        eservice_id       VARCHAR (255) NOT NULL,
+        descriptor_id     VARCHAR (255) NOT NULL,
+        consumer_id       VARCHAR (255) NOT NULL,
+        "state"           VARCHAR (255) NOT NULL,
+        event_stream_id   VARCHAR (255) NOT NULL DEFAULT gen_random_uuid(),
+        event_version_id  BIGINT NOT NULL DEFAULT -1,
+        tmst_insert       TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+        tmst_last_edit    TIMESTAMPTZ
     );
-    CREATE INDEX IF NOT EXISTS agreement_index_eservice_and_consumer_and_state ON "${NAMESPACE}_interop"."agreement"(eservice_id, consumer_id, state);
-
+    CREATE UNIQUE INDEX IF NOT EXISTS IDX_AGREEMENT_ON_EVENT_STREAM_ID_VERSION_ID  ON "${NAMESPACE}_interop"."agreement"(event_stream_id, event_version_id);
+    CREATE INDEX IF NOT EXISTS IDX_AGREEMENT_ON_ESERVICE_CONSUMER_AND_STATE ON "${NAMESPACE}_interop"."agreement"(eservice_id, consumer_id, upper(state));
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".agreement TO pull_signal_user;
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".agreement TO signal_persister_user;
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".agreement TO agreement_consumer_user;
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".agreement TO push_signal_user;
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_interop"."purpose" (
-        purpose_id       VARCHAR (255) NOT NULL,
+        purpose_id          VARCHAR (255) PRIMARY KEY,
         purpose_version_id  VARCHAR (255),
-        purpose_state    VARCHAR (255) NOT NULL,
-        eservice_id     VARCHAR (255) NOT NULL,
-        consumer_id     VARCHAR (255) NOT NULL,
-        event_id        BIGINT DEFAULT -1,
-        event_stream_id VARCHAR (255) NOT NULL DEFAULT gen_random_uuid(),
-        event_version_id   BIGINT NOT NULL DEFAULT -1,
-        tmst_insert     TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-        tmst_last_edit  TIMESTAMPTZ,
-        UNIQUE (event_stream_id, event_version_id),
-        UNIQUE (purpose_id, eservice_id, consumer_id),
-        PRIMARY KEY (purpose_id)
+        purpose_state       VARCHAR (255) NOT NULL,
+        eservice_id         VARCHAR (255) NOT NULL,
+        consumer_id         VARCHAR (255) NOT NULL,
+        event_stream_id     VARCHAR (255) NOT NULL DEFAULT gen_random_uuid(),
+        event_version_id    BIGINT NOT NULL DEFAULT -1,
+        tmst_insert         TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+        tmst_last_edit      TIMESTAMPTZ
     );
-    CREATE INDEX IF NOT EXISTS purpose_index_eservice_and_consumer_and_state ON "${NAMESPACE}_interop"."purpose"(purpose_id, consumer_id, purpose_state, eservice_id);
-
+    CREATE UNIQUE INDEX IF NOT EXISTS IDX_PURPOSE_ON_EVENT_STREAM_ID_VERSION_ID  ON "${NAMESPACE}_interop"."purpose"(event_stream_id, event_version_id);
+    CREATE INDEX IF NOT EXISTS IDX_PURPOSE_ON_PURPOSE_ID_CONSUMER_ID_PURPOSE_STATE_ESERVICE_ID ON "${NAMESPACE}_interop"."purpose"(purpose_id, consumer_id, upper(purpose_state), eservice_id);
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".purpose TO pull_signal_user;
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".purpose TO signal_persister_user;
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".purpose TO purpose_consumer_user;
@@ -109,17 +97,15 @@ data:
         eservice_id    VARCHAR (255)  NOT NULL,
         object_type    VARCHAR (255)  NOT NULL,
         signal_type    VARCHAR (255)  NOT NULL,
-        tmst_insert    TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE (signal_id, eservice_id)
+        tmst_insert    TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
     );
-    CREATE INDEX IF NOT exists signal_index_signal_id ON "${NAMESPACE}_signalhub"."signal" USING hash (signal_id);
-    CREATE INDEX IF NOT exists signal_index_eservice_id on "${NAMESPACE}_signalhub"."signal" USING hash (eservice_id);
-
+    CREATE INDEX IF NOT EXISTS IDX_SIGNAL_ON_SIGNAL_ID ON "${NAMESPACE}_signalhub"."signal"(signal_id);
+    CREATE INDEX IF NOT EXISTS IDX_SIGNAL_ON_ESERVICE_ID on "${NAMESPACE}_signalhub"."signal"(eservice_id);
+    CREATE UNIQUE INDEX IF NOT EXISTS IDX_SIGNAL_ON_SIGNAL_ID_ESERVICE_ID ON "${NAMESPACE}_signalhub"."signal"(eservice_id, signal_id);
     GRANT SELECT ON TABLE "${NAMESPACE}_signalhub".signal TO pull_signal_user;
     GRANT SELECT, UPDATE, INSERT ON TABLE "${NAMESPACE}_signalhub".signal TO signal_persister_user;
     GRANT SELECT, DELETE ON TABLE "${NAMESPACE}_signalhub".signal TO batch_cleanup_user;
     GRANT SELECT ON TABLE "${NAMESPACE}_signalhub".signal TO push_signal_user;
-
     GRANT USAGE ON SEQUENCE "${NAMESPACE}_signalhub".signal_id_seq TO signal_persister_user;
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_signalhub"."dead_signal" (
@@ -133,7 +119,9 @@ data:
         tmst_insert    TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
         error_reason   VARCHAR(255)  NOT NULL
     );
-
+    CREATE INDEX IF NOT EXISTS IDX_DEAD_SIGNAL_ON_CORRELATION_ID ON "${NAMESPACE}_signalhub"."dead_signal"(correlation_id);
+    CREATE INDEX IF NOT EXISTS IDX_DEAD_SIGNAL_ON_SIGNAL_ID ON "${NAMESPACE}_signalhub"."dead_signal"(signal_id);
+    CREATE INDEX IF NOT EXISTS IDX_DEAD_SIGNAL_ON_ESERVICE_ID on "${NAMESPACE}_signalhub"."dead_signal"(eservice_id);
     GRANT SELECT, UPDATE, INSERT ON TABLE "${NAMESPACE}_signalhub".dead_signal TO signal_persister_user;
     GRANT USAGE ON SEQUENCE "${NAMESPACE}_signalhub".dead_signal_id_seq TO signal_persister_user;
 
@@ -145,6 +133,5 @@ data:
         tmst_delete_from TIMESTAMPTZ,
         count_deleted    BIGINT
     );
-
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_signalhub".tracing_batch_cleanup TO batch_cleanup_user;
     GRANT SELECT, USAGE ON SEQUENCE "${NAMESPACE}_signalhub".tracing_batch_cleanup_batch_id_seq TO batch_cleanup_user;
