@@ -18,7 +18,7 @@ defaults:
     shell: bash
 
 env:
-  SCRIPTS_FOLDER: "./scripts/scripts-helm"
+  SCRIPTS_FOLDER: "./interop-infra-commons/scripts/scripts-helm"
 
 jobs:
 
