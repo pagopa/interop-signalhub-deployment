@@ -1,6 +1,6 @@
 name: "signalhub-be-load-testing"
 
-roleArn: "arn:aws:iam::058264553932:role/signalhub-be-load-testing"
+roleArn: "arn:aws:iam::058264553932:role/signalhub-be-load-testing-dev"
 
 deployment:
   env:
