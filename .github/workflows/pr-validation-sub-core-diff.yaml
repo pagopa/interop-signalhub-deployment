@@ -69,6 +69,7 @@ jobs:
         run: |
           set -euo pipefail
           
+          export PROJECT_DIR=$(pwd)
           $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --debug --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME --output console
       - name: Kubectl Diff
         id: kubectl_diff
@@ -78,6 +79,7 @@ jobs:
           set -euo pipefail
 
           set +e
+          export PROJECT_DIR=$(pwd)
           $SCRIPTS_FOLDER/kubectlDiff-svc-single-standalone.sh --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME --output console
           DIFF_EXIT_CODE=$?
           set -e
@@ -132,6 +134,7 @@ jobs:
         run: |
           set -euo pipefail
           
+          export PROJECT_DIR=$(pwd)
           $SCRIPTS_FOLDER/helmTemplate-cron-single.sh --debug --environment ${{ inputs.environment }} --job $CRONJOB_NAME --output console
       - name: Kubectl Diff
         id: kubectl_diff
@@ -141,6 +144,7 @@ jobs:
           set -euo pipefail
 
           set +e
+          export PROJECT_DIR=$(pwd)
           $SCRIPTS_FOLDER/kubectlDiff-cron-single-standalone.sh --environment ${{ inputs.environment }} --job $CRONJOB_NAME --output console
           DIFF_EXIT_CODE=$?
           set -e

@@ -104,6 +104,7 @@ jobs:
         run: |
           set -euo pipefail
 
+          export PROJECT_DIR=$(pwd)
           $SCRIPTS_FOLDER/kubectlApply-svc-single-standalone.sh --debug --environment $K8S_NAMESPACE -m $MICROSERVICE_NAME --output console 
 
           CURRENT_SVC=$(kubectl get deployments -n $K8S_NAMESPACE | awk '{if (NR!=1) print $1}' | grep -v grep | grep -i $MICROSERVICE_NAME) 
@@ -165,4 +166,5 @@ jobs:
         run: |
           set -euo pipefail
 
+          export PROJECT_DIR=$(pwd)
           $SCRIPTS_FOLDER/kubectlApply-cron-single-standalone.sh --debug --environment $K8S_NAMESPACE -j $CRONJOB_NAME --output console 
