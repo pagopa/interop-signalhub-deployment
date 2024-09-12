@@ -2,6 +2,14 @@ name: "signalhub-be-push-signal"
 
 roleArn: "arn:aws:iam::058264553932:role/signalhub-be-push-signal-dev"
 
+resources:
+  requests:
+    cpu: "1"
+    memory: "2Gi"
+  limits:
+    cpu: "1"
+    memory: "2Gi"
+
 service:
   create: true
   portName: http
