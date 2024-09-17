@@ -19,12 +19,12 @@ service:
 configmap:
   ACCEPTED_AUDIENCE: "interop-signalhub-pull-signal"
   QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/058264553932/signalhub-push-signal-dev"
+  SH_MAX_CONNECTION_POOL: "10"
 
 deployment:
   env:
     HOST: "0.0.0.0"
     PORT: 8088
-    SH_MAX_CONNECTION_POOL: "10"
   envFromConfigmaps:
     WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
     SH_DB_HOST: "common-signal-store.DB_HOST_RO"

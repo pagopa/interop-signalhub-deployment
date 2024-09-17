@@ -12,6 +12,7 @@ resources:
 
 configmap:
   QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/058264553932/signalhub-push-signal-dev"
+  SH_MAX_CONNECTION_POOL: "10"
 
 deployment:
   flywayInitContainer:
