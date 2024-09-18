@@ -41,7 +41,7 @@ jobs:
           path: interop-infra-commons 
           fetch-depth: 0
           sparse-checkout: 'scripts/helm'
-          token: ${{ secrets.GH_PAT }}
+          token: ${{ secrets.BOT_TOKEN }}
           ref: ${{ vars.INFRA_COMMONS_TAG }}
       - name: Helm Chart Linting
         id: helm_lint
