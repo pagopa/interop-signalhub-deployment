@@ -1,10 +1,10 @@
-namespace: "dev"
-replicas: 2
+namespace: "uat"
+replicas: 1
 
 techStack: "nodejs"
 
 image:
-  repositoryPrefix: "___WHO_KNOWS___.dkr.ecr.eu-south-1.amazonaws.com"
+  repositoryPrefix: "058264142001.dkr.ecr.eu-south-1.amazonaws.com"
   imagePullPolicy: Always
   tag: $IMAGE_TAG_PLACEHOLDER
   digest: $IMAGE_DIGEST_PLACEHOLDER
