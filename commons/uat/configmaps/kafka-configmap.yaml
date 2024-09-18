@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-kafka
+  namespace: uat
+data:
+  KAFKA_BROKERS: "___WHO_KNOWS___"
+  AGREEMENT_TOPIC: "outbound.uat_agreement.events"
+  ESERVICE_TOPIC: "outbound.uat_catalog.events"
+  PURPOSE_TOPIC: "outbound.uat_purpose.events"
