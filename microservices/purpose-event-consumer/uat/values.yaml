@@ -1,0 +1,27 @@
+name: "signalhub-be-purpose-event-consumer"
+
+roleArn: "arn:aws:iam::654654262692:role/signalhub-be-purpose-event-consumer-uat"
+
+service:
+  create: false
+
+configmap:
+  KAFKA_GROUP_ID: "signalhub-uat-purpose-event-consumer"
+  TOPIC_STARTING_OFFSET: "earliest"
+
+deployment:
+  envFromConfigmaps:
+    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    KAFKA_TOPIC: "common-kafka.PURPOSE_TOPIC"
+    SH_DB_HOST: "common-signal-store.DB_HOST_RW"
+    SH_DB_NAME: "common-signal-store.DB_NAME"
+    SH_DB_PORT: "common-signal-store.DB_PORT"
+    SH_DB_SIGNALHUB_SCHEMA: "common-signal-store.DB_SIGNALHUB_SCHEMA"
+    SH_DB_INTEROP_SCHEMA: "common-signal-store.DB_INTEROP_SCHEMA"
+    SH_DB_USE_SSL: "common-signal-store.DB_USE_SSL"
+  envFromFieldRef:
+    KAFKA_CLIENT_ID: "metadata.name"
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+  envFromSecrets:
+    SH_DB_USERNAME: "signal-store-purpose-consumer-user.username"
+    SH_DB_PASSWORD: "signal-store-purpose-consumer-user.password"

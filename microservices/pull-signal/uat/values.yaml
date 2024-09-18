@@ -1,0 +1,41 @@
+name: "signalhub-be-pull-signal"
+
+roleArn: "arn:aws:iam::654654262692:role/signalhub-be-pull-signal-uat"
+
+service:
+  create: true
+  portName: http
+  containerPort: 8088
+  targetGroupArn: "arn:aws:elasticloadbalancing:eu-south-1:654654262692:targetgroup/uat-pull-signal/5529a4b109d76da6"
+                   
+configmap:
+  ACCEPTED_AUDIENCE: "interop-signalhub-pull-signal"
+
+deployment:
+  env:
+    HOST: "0.0.0.0"
+    PORT: 8088
+    SH_MAX_CONNECTION_POOL: "10"
+  envFromConfigmaps:
+    WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
+    SH_DB_HOST: "common-signal-store.DB_HOST_RO"
+    SH_DB_NAME: "common-signal-store.DB_NAME"
+    SH_DB_PORT: "common-signal-store.DB_PORT"
+    SH_DB_SIGNALHUB_SCHEMA: "common-signal-store.DB_SIGNALHUB_SCHEMA"
+    SH_DB_INTEROP_SCHEMA: "common-signal-store.DB_INTEROP_SCHEMA"
+    SH_DB_USE_SSL: "common-signal-store.DB_USE_SSL"
+  envFromSecrets:
+    SH_DB_USERNAME: "signal-store-pull-signal-user.username"
+    SH_DB_PASSWORD: "signal-store-pull-signal-user.password"
+  livenessProbe:
+    httpGet:
+      path: "/status"
+      port: http
+    periodSeconds: 5
+    initialDelaySeconds: 15
+  readinessProbe:
+    httpGet:
+      path: "/status"
+      port: http
+    periodSeconds: 5
+    initialDelaySeconds: 15
