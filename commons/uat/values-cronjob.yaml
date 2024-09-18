@@ -1,5 +1,4 @@
 namespace: "uat"
-replicas: 1
 
 image:
   repositoryPrefix: "058264142001.dkr.ecr.eu-south-1.amazonaws.com"
