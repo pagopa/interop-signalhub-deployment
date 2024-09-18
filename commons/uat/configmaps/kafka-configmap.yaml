@@ -4,7 +4,7 @@ metadata:
   name: common-kafka
   namespace: uat
 data:
-  KAFKA_BROKERS: "___WHO_KNOWS___"
-  AGREEMENT_TOPIC: "outbound.uat_agreement.events"
-  ESERVICE_TOPIC: "outbound.uat_catalog.events"
-  PURPOSE_TOPIC: "outbound.uat_purpose.events"
+  KAFKA_BROKERS: "b-3.iam.interopplatformevents.9r48hf.c3.kafka.eu-south-1.amazonaws.com:14003,b-1.iam.interopplatformevents.9r48hf.c3.kafka.eu-south-1.amazonaws.com:14001,b-2.iam.interopplatformevents.9r48hf.c3.kafka.eu-south-1.amazonaws.com:14002"
+  AGREEMENT_TOPIC: "outbound.test_agreement.events"
+  ESERVICE_TOPIC: "outbound.test_catalog.events"
+  PURPOSE_TOPIC: "outbound.test_purpose.events"
