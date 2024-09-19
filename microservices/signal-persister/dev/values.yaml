@@ -2,14 +2,6 @@ name: "signalhub-be-signal-persister"
 
 roleArn: "arn:aws:iam::058264553932:role/signalhub-be-signal-persister-dev"
 
-resources:
-  requests:
-    cpu: "1"
-    memory: "2Gi"
-  limits:
-    cpu: "1"
-    memory: "2Gi"
-
 configmap:
   QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/058264553932/signalhub-push-signal-dev"
 
