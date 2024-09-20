@@ -19,7 +19,7 @@ deployment:
       FLYWAY_PLACEHOLDERS_NAMESPACE: "uat"
       FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
       FLYWAY_DEFAULT_SCHEMA: "flyway"
-      FLYWAY_SCHEMAS: "uat_interop,uat_signalhub"
+      FLYWAY_SCHEMAS: "flyway,uat_interop,uat_signalhub"
     envFromConfigmaps:
       POSTGRES_HOST: "common-signal-store.DB_HOST_RW"
       POSTGRES_PORT: "common-signal-store.DB_PORT"
