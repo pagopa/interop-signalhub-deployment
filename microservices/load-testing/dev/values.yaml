@@ -1,0 +1,28 @@
+name: "signalhub-be-load-testing"
+
+roleArn: "arn:aws:iam::058264553932:role/signalhub-be-load-testing-dev"
+
+deployment:
+  env:
+    BASE_URL: "https://api.dev.signalhub.interop.pagopa.it"
+  resources:
+    requests:
+      cpu: "16"
+      memory: "32Gi"
+    limits:
+      cpu: "16"
+      memory: "32Gi"    
+  livenessProbe:
+    exec:
+      command:
+      - touch
+      - /tmp/healthy
+    periodSeconds: 5
+    initialDelaySeconds: 15
+  readinessProbe:
+    exec:
+      command:
+      - touch
+      - /tmp/healthy
+    periodSeconds: 5
+    initialDelaySeconds: 15
