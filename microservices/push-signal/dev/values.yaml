@@ -11,6 +11,7 @@ service:
 configmap:
   ACCEPTED_AUDIENCE: "interop-signalhub-push-signal"
   QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/058264553932/signalhub-push-signal-dev"
+  API_PUSH_VERSION: "v1"
 
 deployment:
   env:
@@ -30,13 +31,13 @@ deployment:
     SH_DB_PASSWORD: "signal-store-push-signal-user.password"
   livenessProbe:
     httpGet:
-      path: "/status"
+      path: "/health"
       port: http
     periodSeconds: 5
     initialDelaySeconds: 15
   readinessProbe:
     httpGet:
-      path: "/status"
+      path: "/health"
       port: http
     periodSeconds: 5
     initialDelaySeconds: 15

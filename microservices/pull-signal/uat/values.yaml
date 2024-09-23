@@ -10,6 +10,7 @@ service:
                    
 configmap:
   ACCEPTED_AUDIENCE: "interop-signalhub-pull-signal"
+  API_PULL_VERSION: "v1"
 
 deployment:
   flywayInitContainer:
@@ -46,13 +47,13 @@ deployment:
     SH_DB_PASSWORD: "signal-store-pull-signal-user.password"
   livenessProbe:
     httpGet:
-      path: "/status"
+      path: "/health"
       port: http
     periodSeconds: 5
     initialDelaySeconds: 15
   readinessProbe:
     httpGet:
-      path: "/status"
+      path: "/health"
       port: http
     periodSeconds: 5
     initialDelaySeconds: 15
