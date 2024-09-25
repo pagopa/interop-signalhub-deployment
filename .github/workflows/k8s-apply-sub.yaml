@@ -17,12 +17,13 @@ on:
       EKS_CLUSTER_NAME:
         required: true
 
+  
 defaults:
   run:
     shell: bash
 
 env:
-  SCRIPTS_FOLDER: "./scripts"
+  SCRIPTS_FOLDER: "./interop-infra-commons/scripts/helm"
 
 jobs:
   workflow_setup:
@@ -86,6 +87,16 @@ jobs:
       - name: Checkout
         id: checkout
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+      - name: Checkout scripts repository
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+        with:
+          repository: pagopa/interop-infra-commons
+          path: interop-infra-commons 
+          fetch-depth: 0
+          sparse-checkout: 'scripts/helm'
+          #token: ${{ secrets.PRIVATE_REPOS_PAT }}
+          ref: ${{ vars.INFRA_COMMONS_TAG }}
+          ssh-key: ${{ secrets.PRIVATE_REPOS_SSH_KEY }}
       - name: Set kubeconfig
         run: |
           aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
@@ -97,6 +108,7 @@ jobs:
         run: |
           set -euo pipefail
 
+          export PROJECT_DIR=$(pwd)
           $SCRIPTS_FOLDER/kubectlApply-svc-single-standalone.sh --debug --environment $K8S_NAMESPACE -m $MICROSERVICE_NAME --output console 
 
           CURRENT_SVC=$(kubectl get deployments -n $K8S_NAMESPACE | awk '{if (NR!=1) print $1}' | grep -v grep | grep -i $MICROSERVICE_NAME) 
@@ -141,6 +153,16 @@ jobs:
       - name: Checkout
         id: checkout
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+      - name: Checkout scripts repository
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+        with:
+          repository: pagopa/interop-infra-commons
+          path: interop-infra-commons 
+          fetch-depth: 0
+          sparse-checkout: 'scripts/helm'
+          #token: ${{ secrets.PRIVATE_REPOS_PAT }}
+          ref: ${{ vars.INFRA_COMMONS_TAG }}
+          ssh-key: ${{ secrets.PRIVATE_REPOS_SSH_KEY }}
       - name: Set kubeconfig
         run: |
           aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
@@ -151,4 +173,5 @@ jobs:
         run: |
           set -euo pipefail
 
+          export PROJECT_DIR=$(pwd)
           $SCRIPTS_FOLDER/kubectlApply-cron-single-standalone.sh --debug --environment $K8S_NAMESPACE -j $CRONJOB_NAME --output console 
