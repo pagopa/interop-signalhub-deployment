@@ -59,9 +59,9 @@ jobs:
           path: interop-infra-commons 
           fetch-depth: 0
           sparse-checkout: 'scripts/helm'
-          token: ${{ secrets.PRIVATE_REPOS_PAT }}
+          #token: ${{ secrets.PRIVATE_REPOS_PAT }}
           ref: ${{ vars.INFRA_COMMONS_TAG }}
-
+          ssh-key: ${{ secrets.PRIVATE_REPOS_SSH_KEY }}
       - name: Set kubeconfig
         run: |
           aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
