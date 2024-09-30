@@ -116,6 +116,8 @@ jobs:
           CURRENT_DATE_SECONDS=$(date +%s)
           WAIT_EXP_SECONDS=$(($CURRENT_DATE_SECONDS + $MAX_WAIT_TIME_SECONDS))
           SVC_ROLLOUT_STATUS=1
+          
+          kubectl rollout restart -n $K8S_NAMESPACE deployment/$CURRENT_SVC > /dev/null
 
           while [[ $CURRENT_DATE_SECONDS -lt $WAIT_EXP_SECONDS ]]
           do
