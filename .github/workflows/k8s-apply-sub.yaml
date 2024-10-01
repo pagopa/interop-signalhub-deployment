@@ -116,9 +116,15 @@ jobs:
           CURRENT_DATE_SECONDS=$(date +%s)
           WAIT_EXP_SECONDS=$(($CURRENT_DATE_SECONDS + $MAX_WAIT_TIME_SECONDS))
           SVC_ROLLOUT_STATUS=1
-          
+
+          # Riavvio del deployment
           kubectl rollout restart -n $K8S_NAMESPACE deployment/$CURRENT_SVC > /dev/null
 
+          # Data e ora di riavvio del deployment
+          RESTART_DATE=$(date)
+          echo "INFO - Deployment $CURRENT_SVC restarted at $RESTART_DATE"
+
+          # Controllo dello stato del rollout
           while [[ $CURRENT_DATE_SECONDS -lt $WAIT_EXP_SECONDS ]]
           do
             set +e
@@ -136,6 +142,11 @@ jobs:
             sleep $CYCLE_SLEEP_SECONDS
             CURRENT_DATE_SECONDS=$(date +%s)
           done
+
+          # Controllo per verificare se $CURRENT_SVC è vuoto ed aggiunto un messaggio di errore finale se il rollout non viene completato entro il tempo massimo di attesa
+          if [[ $SVC_ROLLOUT_STATUS -ne 0 ]]; then
+          echo "::error::ERROR - $CURRENT_SVC deployment failed to complete within $MAX_WAIT_TIME_SECONDS seconds"
+          fi
 
           exit $SVC_ROLLOUT_STATUS
 
