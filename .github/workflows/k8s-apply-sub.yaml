@@ -121,7 +121,7 @@ jobs:
           kubectl rollout restart -n $K8S_NAMESPACE deployment/$CURRENT_SVC > /dev/null
 
           # Data e ora di riavvio del deployment
-          RESTART_DATE=$(date)
+          RESTART_DATE=$(date +"%Y-%m-%d %H:%M:%S")
           echo "INFO - Deployment $CURRENT_SVC restarted at $RESTART_DATE"
 
           # Controllo dello stato del rollout
