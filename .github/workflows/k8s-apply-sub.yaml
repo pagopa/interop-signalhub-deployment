@@ -106,6 +106,12 @@ jobs:
         run: |
           set -euo pipefail
 
+          # Controllo se kubectl è disponibile
+          if ! command -v kubectl &> /dev/null; then
+            echo "::error::ERROR - kubectl non è installato o non è nel PATH"
+            exit 1
+          fi
+
           # Controllo se c'è già un rollout in corso
           ROLLOUT_IN_PROGRESS=$(kubectl get rollout -n $K8S_NAMESPACE | grep -i $MICROSERVICE_NAME | grep -v "completed" | wc -l)
           if [[ $ROLLOUT_IN_PROGRESS -ne 0 ]]; then
@@ -119,8 +125,8 @@ jobs:
           # Controllo intermedio dello stato del deployment
           kubectl rollout status -n $K8S_NAMESPACE deployment/$MICROSERVICE_NAME
           if [[ $? -ne 0 ]]; then
-             echo "::error::ERROR - Il deployment $MICROSERVICE_NAME ha fallito durante l'applicazione delle modifiche"
-             exit 1
+            echo "::error::ERROR - Il deployment $MICROSERVICE_NAME ha fallito durante l'applicazione delle modifiche"
+            exit 1
           fi
 
           # Identificazione del servizio corrente
