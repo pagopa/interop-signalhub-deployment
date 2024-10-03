@@ -116,6 +116,13 @@ jobs:
           # Applicazione delle modifiche
           $SCRIPTS_FOLDER/kubectlApply-svc-single-standalone.sh --debug --environment $K8S_NAMESPACE -m $MICROSERVICE_NAME --output console
 
+          # Controllo intermedio dello stato del deployment
+          kubectl rollout status -n $K8S_NAMESPACE deployment/$MICROSERVICE_NAME
+          if [[ $? -ne 0 ]]; then
+             echo "::error::ERROR - Il deployment $MICROSERVICE_NAME ha fallito durante l'applicazione delle modifiche"
+             exit 1
+          fi
+
           # Identificazione del servizio corrente
           CURRENT_SVC=$(kubectl get deployments -n $K8S_NAMESPACE | awk '{if (NR!=1) print $1}' | grep -v grep | grep -i $MICROSERVICE_NAME) 
           
