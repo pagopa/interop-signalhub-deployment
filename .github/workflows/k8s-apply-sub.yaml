@@ -143,9 +143,9 @@ jobs:
             CURRENT_DATE_SECONDS=$(date +%s)
           done
 
-          # Se $CURRENT_SVC è vuoto da il messaggio d'errore che il rollout non è stato completato entro il tempo massimo di attesa
+          # Il rollout non è stato completato entro il tempo massimo di attesa
           if [[ $SVC_ROLLOUT_STATUS -ne 0 ]]; then
-          echo "::error::ERROR - $CURRENT_SVC deployment failed to complete within $MAX_WAIT_TIME_SECONDS seconds"
+            echo "::error::ERROR - $CURRENT_SVC deployment failed to complete within $MAX_WAIT_TIME_SECONDS seconds"
           fi
 
           exit $SVC_ROLLOUT_STATUS
