@@ -106,8 +106,10 @@ jobs:
         run: |
           set -euo pipefail
 
-          $SCRIPTS_FOLDER/kubectlApply-svc-single-standalone.sh --debug --environment $K8S_NAMESPACE -m $MICROSERVICE_NAME --output console 
-
+          # Applicazione delle modifiche
+          $SCRIPTS_FOLDER/kubectlApply-svc-single-standalone.sh --debug --environment $K8S_NAMESPACE -m $MICROSERVICE_NAME --output console
+           
+          # Identificazione del servizio corrente
           CURRENT_SVC=$(kubectl get deployments -n $K8S_NAMESPACE | awk '{if (NR!=1) print $1}' | grep -v grep | grep -i $MICROSERVICE_NAME) 
           
           MAX_WAIT_TIME_SECONDS=$TIMEOUT_SECONDS
