@@ -106,9 +106,16 @@ jobs:
         run: |
           set -euo pipefail
 
+          # Controllo se c'è già un rollout in corso
+          ROLLOUT_IN_PROGRESS=$(kubectl get rollout -n $K8S_NAMESPACE | grep -i $MICROSERVICE_NAME | grep -v "completed" | wc -l)
+          if [[ $ROLLOUT_IN_PROGRESS -ne 0 ]]; then
+            echo "::error::ERROR - Un rollout è già in corso per $MICROSERVICE_NAME nel namespace $K8S_NAMESPACE"
+            exit 1
+          fi
+
           # Applicazione delle modifiche
           $SCRIPTS_FOLDER/kubectlApply-svc-single-standalone.sh --debug --environment $K8S_NAMESPACE -m $MICROSERVICE_NAME --output console
-           
+
           # Identificazione del servizio corrente
           CURRENT_SVC=$(kubectl get deployments -n $K8S_NAMESPACE | awk '{if (NR!=1) print $1}' | grep -v grep | grep -i $MICROSERVICE_NAME) 
           
