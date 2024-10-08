@@ -106,10 +106,8 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Controllo se c'è già un rollout in corso
-          ROLLOUT_IN_PROGRESS=$(kubectl get rollout -n $K8S_NAMESPACE | grep -i $MICROSERVICE_NAME | grep -v "completed" | wc -l)
-          if [[ $ROLLOUT_IN_PROGRESS -ne 0 ]]; then
-            echo "::error::ERROR - Un rollout è già in corso per $MICROSERVICE_NAME nel namespace $K8S_NAMESPACE"
+          if ! kubectl rollout status -n "$K8S_NAMESPACE" "deployment/$MICROSERVICE_NAME" --timeout=0s >/dev/null 2>&1; then
+            echo "::error::ERROR - A rollout is already in progress for $MICROSERVICE_NAME in namespace $K8S_NAMESPACE"
             exit 1
           fi
 
@@ -117,7 +115,7 @@ jobs:
 
           kubectl rollout status -n $K8S_NAMESPACE deployment/$MICROSERVICE_NAME
           if [[ $? -ne 0 ]]; then
-            echo "::error::ERROR - Il deployment $MICROSERVICE_NAME ha fallito durante l'applicazione delle modifiche"
+            echo "::error::ERROR - Deployment $MICROSERVICE_NAME failed during the application of changes"
             exit 1
           fi
 
