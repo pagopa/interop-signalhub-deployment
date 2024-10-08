@@ -106,18 +106,6 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Controllo se kubectl è disponibile
-          if ! command -v kubectl &> /dev/null; then
-            echo "::error::ERROR - kubectl non è installato o non è nel PATH"
-            exit 1
-          fi
-
-          # Controllo se il cluster è raggiungibile
-          if ! kubectl cluster-info &> /dev/null; then
-            echo "::error::ERROR - Il cluster Kubernetes non è raggiungibile"
-            exit 1
-          fi
-
           # Controllo se c'è già un rollout in corso
           ROLLOUT_IN_PROGRESS=$(kubectl get rollout -n $K8S_NAMESPACE | grep -i $MICROSERVICE_NAME | grep -v "completed" | wc -l)
           if [[ $ROLLOUT_IN_PROGRESS -ne 0 ]]; then
