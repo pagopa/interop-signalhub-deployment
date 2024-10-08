@@ -113,17 +113,14 @@ jobs:
             exit 1
           fi
 
-          # Applicazione delle modifiche
           $SCRIPTS_FOLDER/kubectlApply-svc-single-standalone.sh --debug --environment $K8S_NAMESPACE -m $MICROSERVICE_NAME --output console
 
-          # Controllo intermedio dello stato del deployment
           kubectl rollout status -n $K8S_NAMESPACE deployment/$MICROSERVICE_NAME
           if [[ $? -ne 0 ]]; then
             echo "::error::ERROR - Il deployment $MICROSERVICE_NAME ha fallito durante l'applicazione delle modifiche"
             exit 1
           fi
 
-          # Identificazione del servizio corrente
           CURRENT_SVC=$(kubectl get deployments -n $K8S_NAMESPACE | awk '{if (NR!=1) print $1}' | grep -v grep | grep -i $MICROSERVICE_NAME) 
           
           MAX_WAIT_TIME_SECONDS=$TIMEOUT_SECONDS
@@ -133,14 +130,11 @@ jobs:
           WAIT_EXP_SECONDS=$(($CURRENT_DATE_SECONDS + $MAX_WAIT_TIME_SECONDS))
           SVC_ROLLOUT_STATUS=1
 
-          # Restart del deployment
           kubectl rollout restart -n $K8S_NAMESPACE deployment/$CURRENT_SVC > /dev/null
 
-          # Data e ora di restart del deployment
           RESTART_DATE=$(date +"%Y-%m-%d %H:%M:%S")
           echo "INFO - Deployment $CURRENT_SVC restarted at $RESTART_DATE"
 
-          # Controllo dello stato del rollout
           while [[ $CURRENT_DATE_SECONDS -lt $WAIT_EXP_SECONDS ]]
           do
             set +e
@@ -159,7 +153,6 @@ jobs:
             CURRENT_DATE_SECONDS=$(date +%s)
           done
 
-          # Il rollout non è stato completato entro il tempo massimo di attesa
           if [[ $SVC_ROLLOUT_STATUS -ne 0 ]]; then
             echo "::error::ERROR - $CURRENT_SVC deployment failed to complete within $MAX_WAIT_TIME_SECONDS seconds"
           fi
