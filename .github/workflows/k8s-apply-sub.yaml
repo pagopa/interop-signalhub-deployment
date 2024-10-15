@@ -107,13 +107,12 @@ jobs:
           set -euo pipefail
 
           #!/bin/sh
-          # Check if a rollout is in progress
           echo "INFO - Verifying no active rollouts; waiting up to $TIMEOUT_SECONDS if required"
           if ! kubectl rollout status -n "$K8S_NAMESPACE" "deployment/$MICROSERVICE_NAME" --timeout="$TIMEOUT_SECONDS" --watch >/dev/null 2>&1; then
             echo "::error::ERROR - A rollout is already in progress for $MICROSERVICE_NAME in namespace $K8S_NAMESPACE"
             exit 1
           fi
-          
+
           echo "INFO - Apply changes for $MICROSERVICE_NAME ."
           "$SCRIPTS_FOLDER/kubectlApply-svc-single-standalone.sh" --debug --environment "$K8S_NAMESPACE -m $MICROSERVICE_NAME" --output console
           sleep 5
