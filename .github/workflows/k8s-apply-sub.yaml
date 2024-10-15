@@ -106,39 +106,34 @@ jobs:
         run: |
           set -euo pipefail
 
-          if ! kubectl rollout status -n "$K8S_NAMESPACE" "deployment/$MICROSERVICE_NAME" --timeout=0s --watch >/dev/null 2>&1; then
+          #!/bin/sh
+          # Check if a rollout is in progress
+          echo "INFO - Verifying no active rollouts; waiting up to $TIMEOUT_SECONDS if required"
+          if ! kubectl rollout status -n "$K8S_NAMESPACE" "deployment/$MICROSERVICE_NAME" --timeout="$TIMEOUT_SECONDS" --watch >/dev/null 2>&1; then
             echo "::error::ERROR - A rollout is already in progress for $MICROSERVICE_NAME in namespace $K8S_NAMESPACE"
             exit 1
           fi
 
           # Apply changes
-          $SCRIPTS_FOLDER/kubectlApply-svc-single-standalone.sh --debug --environment $K8S_NAMESPACE -m $MICROSERVICE_NAME --output console        
-
+          echo "INFO - Apply changes for $MICROSERVICE_NAME ."
+          "$SCRIPTS_FOLDER/kubectlApply-svc-single-standalone.sh" --debug --environment "$K8S_NAMESPACE -m $MICROSERVICE_NAME" --output console
+          sleep 5
           # Check the desired replicas
           DESIRED_REPLICAS=$(kubectl get deployment "$MICROSERVICE_NAME" -n "$K8S_NAMESPACE" -o jsonpath='{.spec.replicas}')
-          echo "INFO - Desired replicas for $MICROSERVICE_NAME: $DESIRED_REPLICAS"
-          if [[ $DESIRED_REPLICAS -ne 0 ]]; then
-            kubectl rollout status -n $K8S_NAMESPACE deployment/$MICROSERVICE_NAME
-            if [[ $? -ne 0 ]]; then
-              kubectl rollout restart -n $K8S_NAMESPACE deployment/$CURRENT_SVC > /dev/null
-              RESTART_DATE=$(date +"%Y-%m-%d %H:%M:%S")
-              echo "INFO - Deployment $CURRENT_SVC restarted at $RESTART_DATE"
-              kubectl rollout status -n $K8S_NAMESPACE deployment/$MICROSERVICE_NAME
-              if [[ $? -ne 0 ]]; then
-                echo "::error::ERROR - Deployment $MICROSERVICE_NAME failed during the application of changes. Please perform the rollout manually."
-                exit 1
-              fi
-            fi      
-
-            # Monitor the rollout status
-            kubectl rollout status -n "$K8S_NAMESPACE" deployment/$MICROSERVICE_NAME --timeout=5m --watch
-            if [[ $? -ne 0 ]]; then    
-              echo "::error::ERROR - Rollout for $MICROSERVICE_NAME failed after 5 minutes."
+          echo "INFO - Desired replicas:$DESIRED_REPLICAS"
+          if [ "$DESIRED_REPLICAS" -eq 0 ]; then
+            echo "::error::ERROR - Desired replicas for $MICROSERVICE_NAME are 0. Stopping further operations."
+            exit 1
+          else
+            # Check if a rollout is in progress
+            echo "INFO - Wait for the rollout of the $MICROSERVICE_NAME to finish (Max $TIMEOUT_SECONDS) ."
+            if ! kubectl rollout status -n "$K8S_NAMESPACE" "deployment/$MICROSERVICE_NAME" --timeout="$TIMEOUT_SECONDS" --watch >/dev/null 2>&1; then
+              echo "::error::ERROR - Rollout for $MICROSERVICE_NAME failed or exceeded $TIMEOUT_SECONDS. Please check the status of the current rollout and if necessary perform the rollout manually"
               exit 1
             fi
-              echo "INFO - Rollout for $MICROSERVICE_NAME completed successfully."  
           fi
-          
+          echo "INFO - Rollout for $MICROSERVICE_NAME completed successfully."
+            
   deploy_cj:
     name: ${{ matrix.cronjob }}
     runs-on: [ self-hosted, "run_id:${{ inputs.environment }}-${{ github.run_id }}" ]
