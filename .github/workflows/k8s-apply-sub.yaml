@@ -117,12 +117,10 @@ jobs:
             exit 1
           fi
 
-          # Apply changes
           echo "INFO - Apply changes for $MICROSERVICE_NAME."
           "$SCRIPTS_FOLDER/kubectlApply-svc-single-standalone.sh" --debug --environment "$K8S_NAMESPACE -m $MICROSERVICE_NAME" --output console
           sleep 5
 
-          # Check the desired replicas
           DESIRED_REPLICAS=$(kubectl get deployment "$MICROSERVICE_NAME" -n "$K8S_NAMESPACE" -o jsonpath='{.spec.replicas}')
           echo "INFO - Desired replicas: $DESIRED_REPLICAS"
           if [ "$DESIRED_REPLICAS" -eq 0 ]; then
