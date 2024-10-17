@@ -7,6 +7,11 @@ on:
         description: 'Environment'
         required: true
         type: environment
+      force_restart:
+        description: 'Force Rollout Restart'
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   id-token: write
