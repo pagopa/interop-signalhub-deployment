@@ -9,7 +9,7 @@ service:
   targetGroupArn: "arn:aws:elasticloadbalancing:eu-south-1:654654262692:targetgroup/uat-push-signal/ceae35ee8ddc0c0a"
 
 configmap:
-  ACCEPTED_AUDIENCE: "interop-signalhub-push-signal"
+  ACCEPTED_AUDIENCE: "uat.interop.pagopa.it/m2m"
   QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/654654262692/signalhub-push-signal-uat"
   API_PUSH_VERSION: "v1"
 
