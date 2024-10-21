@@ -8,7 +8,7 @@ on:
         required: true
         type: environment
       force_restart:
-        description: 'Force Deployment Rollout Restart'
+        description: 'Force Deployment Rollout Restart '
         required: true
         default: false
         type: boolean
