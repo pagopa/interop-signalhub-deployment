@@ -131,7 +131,7 @@ jobs:
           # Check if the force rollout flag is true
           if [ "$FORCE_ROLLOUT" = true ]; then
             echo "::info::INFO - Force rollout restart requested $MICROSERVICE_NAME." 
-            if ! kubectl rollout status -n "$K8S_NAMESPACE" "deployment/$MICROSERVICE_NAME" --timeout=1s --watch >/dev/null 2>&1; then
+            if ! kubectl rollout status -n "$K8S_NAMESPACE" "deployment/$MICROSERVICE_NAME" --watch=false >/dev/null 2>&1; then
               echo "::info::INFO - Rollout alredy active for $MICROSERVICE_NAME. No force restart needed."
             else
               echo "INFO - No rollout in progress, forcing a rollout restart."
