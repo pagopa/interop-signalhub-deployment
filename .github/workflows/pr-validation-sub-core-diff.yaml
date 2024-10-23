@@ -18,7 +18,7 @@ defaults:
     shell: bash
 
 env:
-  SCRIPTS_FOLDER: "./scripts"
+  SCRIPTS_FOLDER: "./interop-infra-commons/scripts/helm"
 
 jobs:
   workflow_setup:
@@ -44,6 +44,7 @@ jobs:
     needs: [ workflow_setup ]
     runs-on: [self-hosted, "run_id:${{ inputs.environment }}-${{ github.run_id }}"]
     environment: ${{ inputs.environment }}
+    if: ${{ ! contains(needs.workflow_setup.outputs.microservices, '[]') }}
     strategy:
       matrix:
         microservice: ${{ fromJson(needs.workflow_setup.outputs.microservices) }}
@@ -52,6 +53,15 @@ jobs:
       - name: Checkout
         id: checkout
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+      - name: Checkout scripts repository
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+        with:
+          repository: pagopa/interop-infra-commons
+          path: interop-infra-commons 
+          fetch-depth: 0
+          sparse-checkout: 'scripts/helm'
+          ref: ${{ vars.INFRA_COMMONS_TAG }}
+          ssh-key: ${{ secrets.PRIVATE_REPOS_SSH_KEY }}
       - name: Set kubeconfig
         run: |
           aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
@@ -62,6 +72,7 @@ jobs:
         run: |
           set -euo pipefail
           
+          export PROJECT_DIR=$(pwd)
           $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --debug --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME --output console
       - name: Kubectl Diff
         id: kubectl_diff
@@ -69,6 +80,8 @@ jobs:
           MICROSERVICE_NAME: ${{ matrix.microservice }}
         run: |
           set -euo pipefail
+
+          export PROJECT_DIR=$(pwd)
 
           set +e
           $SCRIPTS_FOLDER/kubectlDiff-svc-single-standalone.sh --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME --output console
@@ -100,6 +113,7 @@ jobs:
     needs: [ workflow_setup ]
     runs-on: [ self-hosted, "run_id:${{ inputs.environment }}-${{ github.run_id }}" ]
     environment: ${{ inputs.environment }}
+    if: ${{ ! contains(needs.workflow_setup.outputs.cronjobs, '[]') }}
     strategy:
       matrix:
         cronjob: ${{ fromJson(needs.workflow_setup.outputs.cronjobs) }}
@@ -108,6 +122,15 @@ jobs:
       - name: Checkout
         id: checkout
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+      - name: Checkout scripts repository
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+        with:
+          repository: pagopa/interop-infra-commons
+          path: interop-infra-commons 
+          fetch-depth: 0
+          sparse-checkout: 'scripts/helm'
+          ref: ${{ vars.INFRA_COMMONS_TAG }}
+          ssh-key: ${{ secrets.PRIVATE_REPOS_SSH_KEY }}
       - name: Set kubeconfig
         run: |
           aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
@@ -118,6 +141,7 @@ jobs:
         run: |
           set -euo pipefail
           
+          export PROJECT_DIR=$(pwd)
           $SCRIPTS_FOLDER/helmTemplate-cron-single.sh --debug --environment ${{ inputs.environment }} --job $CRONJOB_NAME --output console
       - name: Kubectl Diff
         id: kubectl_diff
@@ -125,6 +149,8 @@ jobs:
           CRONJOB_NAME: ${{ matrix.cronjob }}
         run: |
           set -euo pipefail
+
+          export PROJECT_DIR=$(pwd)
 
           set +e
           $SCRIPTS_FOLDER/kubectlDiff-cron-single-standalone.sh --environment ${{ inputs.environment }} --job $CRONJOB_NAME --output console
