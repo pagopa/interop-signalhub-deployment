@@ -7,9 +7,9 @@ service:
   portName: http
   containerPort: 8088
   targetGroupArn: "arn:aws:elasticloadbalancing:eu-south-1:654654262692:targetgroup/uat-pull-signal/5529a4b109d76da6"
-                   
+
 configmap:
-  ACCEPTED_AUDIENCE: "interop-signalhub-pull-signal"
+  ACCEPTED_AUDIENCE: "uat.interop.pagopa.it/m2m"
   API_PULL_VERSION: "v1"
 
 deployment:

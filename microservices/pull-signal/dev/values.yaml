@@ -9,7 +9,7 @@ service:
   targetGroupArn: "arn:aws:elasticloadbalancing:eu-south-1:058264553932:targetgroup/dev-pull-signal/e4ba4fd60b328edd"
 
 configmap:
-  ACCEPTED_AUDIENCE: "interop-signalhub-pull-signal"
+  ACCEPTED_AUDIENCE: "dev.interop.pagopa.it/m2m"
   API_PULL_VERSION: "v1"
 
 deployment:
