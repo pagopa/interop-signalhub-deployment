@@ -49,7 +49,7 @@ data:
       UNIQUE (eservice_id, descriptor_id, producer_id),
       PRIMARY KEY (eservice_id, descriptor_id)
     );
-    CREATE INDEX IF NOT EXISTS eservice_index_id_and_producer_and_state ON "${NAMESPACE}_interop"."eservice"(eservice_id, producer_id, upper(state));
+    CREATE INDEX IF NOT EXISTS eservice_index_id_and_producer_and_enabled_sh_and_state ON "${NAMESPACE}_interop"."eservice"(eservice_id, producer_id, enabled_signal_hub, upper(state));
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".eservice TO pull_signal_user;
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".eservice TO signal_persister_user;
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".eservice TO eservice_consumer_user;
