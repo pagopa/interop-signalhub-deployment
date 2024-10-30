@@ -152,15 +152,12 @@ jobs:
 
         run: |
           set -euo pipefail
-          #!/bin/sh
 
           TIMEOUT="${TIMEOUT_SECONDS}s"
           
           export PROJECT_DIR=$(pwd)
           echo "INFO - Apply changes for $MICROSERVICE_NAME."
           "$SCRIPTS_FOLDER/kubectlApply-svc-single-standalone.sh" --debug --environment "$K8S_NAMESPACE" -m "$MICROSERVICE_NAME" --output console
-
-          sleep 5
 
           DESIRED_REPLICAS=$(kubectl get deployment "$MICROSERVICE_NAME" -n "$K8S_NAMESPACE" -o jsonpath='{.spec.replicas}')
           echo "INFO - Desired replicas: $DESIRED_REPLICAS"
