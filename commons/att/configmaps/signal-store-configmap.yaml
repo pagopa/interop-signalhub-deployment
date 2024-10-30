@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-signal-store
+  namespace: att
+data:
+  DB_HOST_RW: "signalhub-signal-store-xxx.cluster-cbuwkqmqcppz.eu-south-1.rds.amazonaws.com" # TO CHANGE!
+  DB_HOST_RO: "signalhub-signal-store-xxx.cluster-ro-cbuwkqmqcppz.eu-south-1.rds.amazonaws.com" # TO CHANGE!
+  DB_NAME: "signal_store"
+  DB_PORT: "5432"
+  DB_SIGNALHUB_SCHEMA: "ATT_SIGNALHUB"
+  DB_INTEROP_SCHEMA: "ATT_INTEROP"
+  DB_USE_SSL: "true"
