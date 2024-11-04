@@ -14,9 +14,15 @@ jobs:
     secrets: inherit
     with:
       environment: dev
+
+  start_uat_workflow:
+    uses: ./.github/workflows/pr-validation-generic-env.yaml
+    secrets: inherit
+    with:
+      environment: uat
   
   diff_summary:
-    needs: [ start_dev_workflow ]
+    needs: [ start_dev_workflow, start_uat_workflow ]
     if: ${{ always() }}
     secrets: inherit
     uses: ./.github/workflows/pr-validation-sub-print-summary.yaml
