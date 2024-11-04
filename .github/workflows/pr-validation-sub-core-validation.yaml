@@ -12,6 +12,8 @@ on:
         required: true
       EKS_CLUSTER_NAME:
         required: true
+      PRIVATE_REPOS_SSH_KEY:
+        required: true
 
 defaults:
   run:
