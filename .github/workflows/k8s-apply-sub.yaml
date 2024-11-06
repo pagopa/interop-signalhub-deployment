@@ -146,6 +146,7 @@ jobs:
       - name: Deploy
         env:
           MICROSERVICE_NAME: ${{ matrix.microservice }}
+          MICROSERVICE_FULLNAME: signalhub-be-${{ matrix.microservice }}
           K8S_NAMESPACE: ${{ inputs.environment }}
           TIMEOUT_SECONDS: ${{ inputs.timeout_seconds }}
           FORCE_ROLLOUT: ${{ inputs.force_restart }}
@@ -156,34 +157,34 @@ jobs:
           TIMEOUT="${TIMEOUT_SECONDS}s"
           
           export PROJECT_DIR=$(pwd)
-          echo "INFO - Apply changes for $MICROSERVICE_NAME."
+          echo "INFO - Apply changes for $MICROSERVICE_FULLNAME."
           "$SCRIPTS_FOLDER/kubectlApply-svc-single-standalone.sh" --debug --environment "$K8S_NAMESPACE" -m "$MICROSERVICE_NAME" --output console
 
-          DESIRED_REPLICAS=$(kubectl get deployment "$MICROSERVICE_NAME" -n "$K8S_NAMESPACE" -o jsonpath='{.spec.replicas}')
+          DESIRED_REPLICAS=$(kubectl get deployment "$MICROSERVICE_FULLNAME" -n "$K8S_NAMESPACE" -o jsonpath='{.spec.replicas}')
           echo "INFO - Desired replicas: $DESIRED_REPLICAS"
           if [ "$DESIRED_REPLICAS" -eq 0 ]; then
-            echo "::info::INFO - Desired replicas for $MICROSERVICE_NAME are 0. Stopping further operations."
+            echo "::info::INFO - Desired replicas for $MICROSERVICE_FULLNAME are 0. Stopping further operations."
             exit 0
           fi
 
           # Check if the force rollout flag is true
           if [ "$FORCE_ROLLOUT" = true ]; then
-            echo "::info::INFO - Force rollout restart requested $MICROSERVICE_NAME."
-            if ! kubectl rollout status -n "$K8S_NAMESPACE" "deployment/$MICROSERVICE_NAME" --watch=false >/dev/null 2>&1; then
-              echo "::info::INFO - Rollout already active for $MICROSERVICE_NAME. No force restart needed."
+            echo "::info::INFO - Force rollout restart requested $MICROSERVICE_FULLNAME."
+            if ! kubectl rollout status -n "$K8S_NAMESPACE" "deployment/$MICROSERVICE_FULLNAME" --watch=false >/dev/null 2>&1; then
+              echo "::info::INFO - Rollout already active for $MICROSERVICE_FULLNAME. No force restart needed."
             else
               echo "INFO - No rollout in progress, forcing a rollout restart."
-              kubectl rollout restart -n "$K8S_NAMESPACE" "deployment/$MICROSERVICE_NAME"
+              kubectl rollout restart -n "$K8S_NAMESPACE" "deployment/$MICROSERVICE_FULLNAME"
             fi
           fi
 
-          echo "INFO - Wait for the rollout of the $MICROSERVICE_NAME to finish (Max $TIMEOUT)."
-          if ! kubectl rollout status -n "$K8S_NAMESPACE" "deployment/$MICROSERVICE_NAME" --timeout="$TIMEOUT" --watch >/dev/null 2>&1; then
-            echo "::error::ERROR - Rollout for $MICROSERVICE_NAME failed or exceeded $TIMEOUT."
+          echo "INFO - Wait for the rollout of the $MICROSERVICE_FULLNAME to finish (Max $TIMEOUT)."
+          if ! kubectl rollout status -n "$K8S_NAMESPACE" "deployment/$MICROSERVICE_FULLNAME" --timeout="$TIMEOUT" --watch >/dev/null 2>&1; then
+            echo "::error::ERROR - Rollout for $MICROSERVICE_FULLNAME failed or exceeded $TIMEOUT."
             exit 1
           fi
 
-          echo "INFO - Rollout for $MICROSERVICE_NAME completed successfully."
+          echo "INFO - Rollout for $MICROSERVICE_FULLNAME completed successfully."
 
   deploy_cj:
     name: ${{ matrix.cronjob }}
