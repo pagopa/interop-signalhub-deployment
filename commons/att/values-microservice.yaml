@@ -4,7 +4,7 @@ replicas: 1
 techStack: "nodejs"
 
 image:
-  repositoryPrefix: "058264142001.dkr.ecr.eu-south-1.amazonaws.com" # TO CHANGE!
+  repositoryPrefix: "058264142001.dkr.ecr.eu-south-1.amazonaws.com"
   imagePullPolicy: Always
   tag: $IMAGE_TAG_PLACEHOLDER
   digest: $IMAGE_DIGEST_PLACEHOLDER

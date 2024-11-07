@@ -1,12 +1,12 @@
 name: "signalhub-be-purpose-event-consumer"
 
-roleArn: "arn:aws:iam::654654262692:role/signalhub-be-purpose-event-consumer-att" # TO CHANGE!
+roleArn: "arn:aws:iam::861276092552:role/signalhub-be-purpose-event-consumer-att"
 
 service:
   create: false
 
 configmap:
-  KAFKA_GROUP_ID: "signalhub-att-purpose-event-consumer" # TO CHECK!
+  KAFKA_GROUP_ID: "signalhub-att-purpose-event-consumer"
   TOPIC_STARTING_OFFSET: "earliest"
 
 deployment:

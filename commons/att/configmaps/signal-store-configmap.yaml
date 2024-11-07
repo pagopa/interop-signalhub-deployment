@@ -4,8 +4,8 @@ metadata:
   name: common-signal-store
   namespace: att
 data:
-  DB_HOST_RW: "signalhub-signal-store-xxx.cluster-cbuwkqmqcppz.eu-south-1.rds.amazonaws.com" # TO CHANGE!
-  DB_HOST_RO: "signalhub-signal-store-xxx.cluster-ro-cbuwkqmqcppz.eu-south-1.rds.amazonaws.com" # TO CHANGE!
+  DB_HOST_RW: "signalhub-signal-store-att.cluster-ct0kequ8itr0.eu-south-1.rds.amazonaws.com"
+  DB_HOST_RO: "signalhub-signal-store-att.cluster-ro-ct0kequ8itr0.eu-south-1.rds.amazonaws.com"
   DB_NAME: "signal_store"
   DB_PORT: "5432"
   DB_SIGNALHUB_SCHEMA: "ATT_SIGNALHUB"

@@ -1,16 +1,16 @@
 name: "signalhub-be-push-signal"
 
-roleArn: "arn:aws:iam::654654262692:role/signalhub-be-push-signal-att" # TO CHANGE!
+roleArn: "arn:aws:iam::861276092552:role/signalhub-be-push-signal-att"
 
 service:
   create: true
   portName: http
   containerPort: 8088
-  targetGroupArn: "arn:aws:elasticloadbalancing:eu-south-1:654654262692:targetgroup/att-push-signal/ceae35ee8ddc0c0a" # TO CHANGE!
+  targetGroupArn: "arn:aws:elasticloadbalancing:eu-south-1:861276092552:targetgroup/att-push-signal/197ed6d5ff7f258d"
 
 configmap:
   ACCEPTED_AUDIENCE: "att.interop.pagopa.it/m2m"
-  QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/654654262692/signalhub-push-signal-att" # TO CHANGE!
+  QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/861276092552/signalhub-push-signal-att"
   API_PUSH_VERSION: "v1"
 
 deployment:

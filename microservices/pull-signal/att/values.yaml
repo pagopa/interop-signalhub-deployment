@@ -1,12 +1,12 @@
 name: "signalhub-be-pull-signal"
 
-roleArn: "arn:aws:iam::654654262692:role/signalhub-be-pull-signal-att" # TO CHANGE!
+roleArn: "arn:aws:iam::861276092552:role/signalhub-be-pull-signal-att"
 
 service:
   create: true
   portName: http
   containerPort: 8088
-  targetGroupArn: "arn:aws:elasticloadbalancing:eu-south-1:654654262692:targetgroup/att-pull-signal/5529a4b109d76da6" # TO CHANGE!
+  targetGroupArn: "arn:aws:elasticloadbalancing:eu-south-1:861276092552:targetgroup/att-pull-signal/9c318c30d0f00e89"
 
 configmap:
   ACCEPTED_AUDIENCE: "att.interop.pagopa.it/m2m"

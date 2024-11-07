@@ -4,7 +4,7 @@ metadata:
   name: common-kafka
   namespace: att
 data:
-  KAFKA_BROKERS: "b-3.iam.interopplatformevents.9r48hf.c3.kafka.eu-south-1.amazonaws.com:14003,b-1.iam.interopplatformevents.9r48hf.c3.kafka.eu-south-1.amazonaws.com:14001,b-2.iam.interopplatformevents.9r48hf.c3.kafka.eu-south-1.amazonaws.com:14002" # TO CHANGE!
-  AGREEMENT_TOPIC: "outbound.att_agreement.events"  # TO CHECK!
-  ESERVICE_TOPIC: "outbound.att_catalog.events"     # TO CHECK!
-  PURPOSE_TOPIC: "outbound.att_purpose.events"      # TO CHECK!
+  KAFKA_BROKERS: "b-3.iam.interopplatformevents.1e4dzm.c3.kafka.eu-south-1.amazonaws.com:14003,b-1.iam.interopplatformevents.1e4dzm.c3.kafka.eu-south-1.amazonaws.com:14001,b-2.iam.interopplatformevents.1e4dzm.c3.kafka.eu-south-1.amazonaws.com:14002"
+  AGREEMENT_TOPIC: "outbound.att_agreement.events"
+  ESERVICE_TOPIC: "outbound.att_catalog.events"
+  PURPOSE_TOPIC: "outbound.att_purpose.events"
