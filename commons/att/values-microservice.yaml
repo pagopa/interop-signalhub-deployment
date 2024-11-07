@@ -1,0 +1,22 @@
+namespace: "att"
+replicas: 1
+
+techStack: "nodejs"
+
+image:
+  repositoryPrefix: "058264142001.dkr.ecr.eu-south-1.amazonaws.com"
+  imagePullPolicy: Always
+  tag: $IMAGE_TAG_PLACEHOLDER
+  digest: $IMAGE_DIGEST_PLACEHOLDER
+
+deployment:
+  env:
+    LOG_LEVEL: "info"
+
+resources:
+  requests:
+    cpu: "1"
+    memory: "2Gi"
+  limits:
+    cpu: "1"
+    memory: "2Gi"
