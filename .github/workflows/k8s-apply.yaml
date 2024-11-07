@@ -26,7 +26,7 @@ jobs:
       ecs_task_id: ${{ steps.start_runner.outputs.ecs_task_id }}
     strategy:
       matrix:
-        index: [1,2,3]
+        index: [1,2,3,4,5,6,7,8]
       fail-fast: false
     steps:
       - name: Start GitHub Runner
