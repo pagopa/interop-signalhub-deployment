@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-redis
+  namespace: dev
+data:
+  RL_HOST: "IDONTKNOW" # TO CHANGE!
+  RL_PORT: "999999" # TO CHANGE!
+

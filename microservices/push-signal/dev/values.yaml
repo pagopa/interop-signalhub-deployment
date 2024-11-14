@@ -12,6 +12,10 @@ configmap:
   ACCEPTED_AUDIENCE: "dev.interop.pagopa.it/m2m"
   QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/058264553932/signalhub-push-signal-dev"
   API_PUSH_VERSION: "v1"
+  RATE_LIMITER_BURST_PERCENTAGE: "1.5"
+  RATE_LIMITER_MAX_REQUESTS: "2"
+  RATE_LIMITER_RATE_INTERVAL_MILLIS: "1000"
+  RATE_LIMITER_TIMEOUT_MILLIS: "300"
 
 deployment:
   env:
@@ -26,6 +30,8 @@ deployment:
     SH_DB_SIGNALHUB_SCHEMA: "common-signal-store.DB_SIGNALHUB_SCHEMA"
     SH_DB_INTEROP_SCHEMA: "common-signal-store.DB_INTEROP_SCHEMA"
     SH_DB_USE_SSL: "common-signal-store.DB_USE_SSL"
+    RATE_LIMITER_REDIS_HOST: common-redis.RL_HOST
+    RATE_LIMITER_REDIS_PORT: common-redis.RL_PORT
   envFromSecrets:
     SH_DB_USERNAME: "signal-store-push-signal-user.username"
     SH_DB_PASSWORD: "signal-store-push-signal-user.password"
