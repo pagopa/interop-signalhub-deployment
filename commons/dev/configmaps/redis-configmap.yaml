@@ -4,6 +4,5 @@ metadata:
   name: common-redis
   namespace: dev
 data:
-  RL_HOST: "IDONTKNOW" # TO CHANGE!
-  RL_PORT: "999999" # TO CHANGE!
-
+  RL_HOST: "redis.dev"
+  RL_PORT: "6379"
