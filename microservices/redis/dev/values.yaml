@@ -4,6 +4,7 @@ service:
   create: true
   portName: redis
   containerPort: 6379
+  targetPort: 6379
 
 image:
   repositoryPrefix: docker.io
