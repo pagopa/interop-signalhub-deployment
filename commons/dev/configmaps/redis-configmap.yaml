@@ -4,5 +4,5 @@ metadata:
   name: common-redis
   namespace: dev
 data:
-  RL_HOST: "redis.dev"
+  RL_HOST: "signalhub-be-redis.dev"
   RL_PORT: "6379"
