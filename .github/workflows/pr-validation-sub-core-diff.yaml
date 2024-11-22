@@ -36,6 +36,17 @@ jobs:
       - name: Checkout
         id: checkout
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+      - name: Kube-linter download
+        run: |
+          set -euo pipefail
+
+          curl -sSLO https://github.com/stackrox/kube-linter/releases/download/v0.7.1/kube-linter-linux_arm64.tar.gz
+          tar -xzf kube-linter-linux_arm64.tar.gz
+          chmod +x kube-linter-linux_arm64/kube-linter
+          sudo mv kube-linter-linux_arm64/kube-linter /usr/local/bin/kube-linter
+
+          kube-linter --version
+
       - id: set-outputs
         run: |
           echo "microservices=$(find microservices -type f -path "*/$TARGET_ENVIRONMENT/values.yaml" -exec dirname {} \; | awk -F'/' '{print $2}' | jq -R -s -c 'split("\n")[:-1]')" >> "$GITHUB_OUTPUT"
@@ -76,6 +87,10 @@ jobs:
           
           export PROJECT_DIR=$(pwd)
           $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --debug --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME --output console
+          
+          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --debug --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME --output console > rendered.yaml
+          kube-linter lint rendered.yaml
+
       - name: Kubectl Diff
         id: kubectl_diff
         env: 
@@ -145,6 +160,10 @@ jobs:
           
           export PROJECT_DIR=$(pwd)
           $SCRIPTS_FOLDER/helmTemplate-cron-single.sh --debug --environment ${{ inputs.environment }} --job $CRONJOB_NAME --output console
+
+          $SCRIPTS_FOLDER/helmTemplate-cron-single.sh --debug --environment ${{ inputs.environment }} --job $CRONJOB_NAME > rendered.yaml
+          kube-linter lint rendered.yaml
+          
       - name: Kubectl Diff
         id: kubectl_diff
         env: 
