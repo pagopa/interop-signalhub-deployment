@@ -7,16 +7,6 @@ on:
         description: 'Environment to run diff against'
         required: true
         type: string
-      skipDiff:
-        description: 'Skip diff'
-        required: true
-        default: 'false'
-        type: string
-      applyTestMode:
-        description: 'Kubectl apply test mode on'
-        required: true
-        default: 'false'
-        type: string
     secrets:
       AWS_REGION:
         required: true
@@ -66,7 +56,6 @@ jobs:
   diff:
     needs: [ create_runner ]
     secrets: inherit
-    if: ${{ inputs.skipDiff == 'false' }}
     uses: ./.github/workflows/pr-validation-sub-core-diff.yaml
     with:
       environment: ${{ inputs.environment }}
