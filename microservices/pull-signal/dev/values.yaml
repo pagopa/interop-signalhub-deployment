@@ -10,8 +10,12 @@ service:
   targetGroupArn: "arn:aws:elasticloadbalancing:eu-south-1:058264553932:targetgroup/dev-pull-signal/e4ba4fd60b328edd"
 
 configmap:
-  ACCEPTED_AUDIENCE: "interop-signalhub-pull-signal"
+  ACCEPTED_AUDIENCE: "dev.interop.pagopa.it/m2m"
   API_PULL_VERSION: "v1"
+  RATE_LIMITER_MAX_REQUESTS: "5"
+  RATE_LIMITER_RATE_INTERVAL_MILLIS: "1000"
+  RATE_LIMITER_BURST_PERCENTAGE: "1"
+  RATE_LIMITER_TIMEOUT_MILLIS: "500"
 
 deployment:
   env:
@@ -26,6 +30,8 @@ deployment:
     SH_DB_SIGNALHUB_SCHEMA: "common-signal-store.DB_SIGNALHUB_SCHEMA"
     SH_DB_INTEROP_SCHEMA: "common-signal-store.DB_INTEROP_SCHEMA"
     SH_DB_USE_SSL: "common-signal-store.DB_USE_SSL"
+    RATE_LIMITER_REDIS_HOST: common-redis.RL_HOST
+    RATE_LIMITER_REDIS_PORT: common-redis.RL_PORT
   envFromSecrets:
     SH_DB_USERNAME: "signal-store-pull-signal-user.username"
     SH_DB_PASSWORD: "signal-store-pull-signal-user.password"

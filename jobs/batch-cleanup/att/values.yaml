@@ -1,0 +1,25 @@
+name: "signalhub-be-batch-cleanup"
+
+techStack: "nodejs"
+
+schedule: "0 * * * *"
+
+concurrencyPolicy: "Forbid"
+activeDeadlineSeconds: null
+
+configmap:
+  SIGNALS_RETENTION_HOURS: "672"
+
+job:
+  env:
+    LOG_LEVEL: INFO
+  envFromConfigmaps:
+    SH_DB_HOST: "common-signal-store.DB_HOST_RW"
+    SH_DB_NAME: "common-signal-store.DB_NAME"
+    SH_DB_PORT: "common-signal-store.DB_PORT"
+    SH_DB_SIGNALHUB_SCHEMA: "common-signal-store.DB_SIGNALHUB_SCHEMA"
+    SH_DB_INTEROP_SCHEMA: "common-signal-store.DB_INTEROP_SCHEMA"
+    SH_DB_USE_SSL: "common-signal-store.DB_USE_SSL"
+  envFromSecrets:
+    SH_DB_USERNAME: "signal-store-batch-cleanup-user.username"
+    SH_DB_PASSWORD: "signal-store-batch-cleanup-user.password"

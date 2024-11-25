@@ -12,6 +12,8 @@ on:
         required: true
       EKS_CLUSTER_NAME:
         required: true
+      PRIVATE_REPOS_SSH_KEY:
+        required: true
 
 defaults:
   run:
@@ -41,7 +43,6 @@ jobs:
           path: interop-infra-commons 
           fetch-depth: 0
           sparse-checkout: 'scripts/helm'
-          #token: ${{ secrets.PRIVATE_REPOS_PAT }}
           ref: ${{ vars.INFRA_COMMONS_TAG }}
           ssh-key: ${{ secrets.PRIVATE_REPOS_SSH_KEY }}
       - name: Helm Chart Linting
@@ -63,5 +64,5 @@ jobs:
           fi
 
           export PROJECT_DIR=$(pwd)
-          $SCRIPTS_FOLDER/helmLint-main.sh --debug --environment ${{ inputs.environment }} --output console $OPTIONS 
 
+          $SCRIPTS_FOLDER/helmLint-main.sh --debug --environment ${{ inputs.environment }} --output console $OPTIONS -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml

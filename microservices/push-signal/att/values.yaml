@@ -1,16 +1,16 @@
 name: "signalhub-be-push-signal"
 
-roleArn: "arn:aws:iam::654654262692:role/signalhub-be-push-signal-uat"
+roleArn: "arn:aws:iam::861276092552:role/signalhub-be-push-signal-att"
 
 service:
   create: true
   portName: http
   containerPort: 8088
-  targetGroupArn: "arn:aws:elasticloadbalancing:eu-south-1:654654262692:targetgroup/uat-push-signal/ceae35ee8ddc0c0a"
+  targetGroupArn: "arn:aws:elasticloadbalancing:eu-south-1:861276092552:targetgroup/att-push-signal/197ed6d5ff7f258d"
 
 configmap:
-  ACCEPTED_AUDIENCE: "uat.interop.pagopa.it/m2m"
-  QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/654654262692/signalhub-push-signal-uat"
+  ACCEPTED_AUDIENCE: "att.interop.pagopa.it/m2m"
+  QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/861276092552/signalhub-push-signal-att"
   API_PUSH_VERSION: "v1"
 
 deployment:
@@ -20,10 +20,10 @@ deployment:
     env:
       FLYWAY_CREATE_SCHEMAS: true
       FLYWAY_PLACEHOLDER_REPLACEMENT: true
-      FLYWAY_PLACEHOLDERS_NAMESPACE: "uat"
+      FLYWAY_PLACEHOLDERS_NAMESPACE: "att"
       FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
-      FLYWAY_DEFAULT_SCHEMA: "uat_flyway"
-      FLYWAY_SCHEMAS: "uat_flyway,uat_interop,uat_signalhub"
+      FLYWAY_DEFAULT_SCHEMA: "att_flyway"
+      FLYWAY_SCHEMAS: "att_flyway,att_interop,att_signalhub"
     envFromConfigmaps:
       POSTGRES_HOST: "common-signal-store.DB_HOST_RW"
       POSTGRES_PORT: "common-signal-store.DB_PORT"

@@ -1,17 +1,16 @@
-name: "signalhub-be-push-signal"
+name: "signalhub-be-pull-signal"
 
-roleArn: "arn:aws:iam::654654262692:role/signalhub-be-push-signal-uat"
+roleArn: "arn:aws:iam::861276092552:role/signalhub-be-pull-signal-att"
 
 service:
   create: true
   portName: http
   containerPort: 8088
-  targetGroupArn: "arn:aws:elasticloadbalancing:eu-south-1:654654262692:targetgroup/uat-push-signal/ceae35ee8ddc0c0a"
+  targetGroupArn: "arn:aws:elasticloadbalancing:eu-south-1:861276092552:targetgroup/att-pull-signal/9c318c30d0f00e89"
 
 configmap:
-  ACCEPTED_AUDIENCE: "uat.interop.pagopa.it/m2m"
-  QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/654654262692/signalhub-push-signal-uat"
-  API_PUSH_VERSION: "v1"
+  ACCEPTED_AUDIENCE: "att.interop.pagopa.it/m2m"
+  API_PULL_VERSION: "v1"
 
 deployment:
   flywayInitContainer:
@@ -20,10 +19,10 @@ deployment:
     env:
       FLYWAY_CREATE_SCHEMAS: true
       FLYWAY_PLACEHOLDER_REPLACEMENT: true
-      FLYWAY_PLACEHOLDERS_NAMESPACE: "uat"
+      FLYWAY_PLACEHOLDERS_NAMESPACE: "att"
       FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
-      FLYWAY_DEFAULT_SCHEMA: "uat_flyway"
-      FLYWAY_SCHEMAS: "uat_flyway,uat_interop,uat_signalhub"
+      FLYWAY_DEFAULT_SCHEMA: "att_flyway"
+      FLYWAY_SCHEMAS: "att_flyway,att_interop,att_signalhub"
     envFromConfigmaps:
       POSTGRES_HOST: "common-signal-store.DB_HOST_RW"
       POSTGRES_PORT: "common-signal-store.DB_PORT"
@@ -31,7 +30,6 @@ deployment:
     envFromSecrets:
       FLYWAY_USER: "signal-store-flyway-user.username"
       FLYWAY_PASSWORD: "signal-store-flyway-user.password"
-
   env:
     HOST: "0.0.0.0"
     PORT: 8088
@@ -45,8 +43,8 @@ deployment:
     SH_DB_INTEROP_SCHEMA: "common-signal-store.DB_INTEROP_SCHEMA"
     SH_DB_USE_SSL: "common-signal-store.DB_USE_SSL"
   envFromSecrets:
-    SH_DB_USERNAME: "signal-store-push-signal-user.username"
-    SH_DB_PASSWORD: "signal-store-push-signal-user.password"
+    SH_DB_USERNAME: "signal-store-pull-signal-user.username"
+    SH_DB_PASSWORD: "signal-store-pull-signal-user.password"
   livenessProbe:
     httpGet:
       path: "/health"

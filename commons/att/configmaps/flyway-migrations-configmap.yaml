@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: common-flyway-migrations
-  namespace: uat
+  namespace: att
 data:
   V1__Init.sql: |-
     CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_interop";

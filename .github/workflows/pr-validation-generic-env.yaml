@@ -1,35 +1,52 @@
-name: K8s Apply
+name: Generic PR Validation
 
 on: 
-  workflow_dispatch:
+  workflow_call:
     inputs:
       environment:
-        description: 'Environment'
+        description: 'Environment to run diff against'
         required: true
-        type: environment
-      force_restart:
-        description: 'Force Deployment Rollout Restart'
+        type: string
+      skipDiff:
+        description: 'Skip diff'
         required: true
-        default: false
-        type: boolean
+        default: 'false'
+        type: string
+      applyTestMode:
+        description: 'Kubectl apply test mode on'
+        required: true
+        default: 'false'
+        type: string
+    secrets:
+      AWS_REGION:
+        required: true
+      EKS_CLUSTER_NAME:
+        required: true
 
 permissions:
   id-token: write
   contents: read
 
 jobs:
+  lint:
+    secrets: inherit
+    uses: ./.github/workflows/pr-validation-sub-core-validation.yaml
+    with:
+      environment: ${{ inputs.environment }}
+  
   create_runner:
-    name: Create Self-Hosted Runner
+    name: "[${{ inputs.environment }}] Create Self-Hosted"
     runs-on: ubuntu-22.04
+    needs: [ lint ]
     environment: ${{ inputs.environment }}
     outputs:
       ecs_task_id: ${{ steps.start_runner.outputs.ecs_task_id }}
     strategy:
       matrix:
-        index: [1,2,3,4,5,6,7,8]
+        index: [1,2,3]
       fail-fast: false
     steps:
-      - name: Start GitHub Runner
+      - name: "[${{ inputs.environment }}] Start GitHub Runner"
         id: start_runner
         uses: pagopa/interop-github-runner-aws-create-action@main
         with:
@@ -45,24 +62,24 @@ jobs:
           ecs_task_max_duration_seconds: ${{ vars.ECS_TASK_MAX_DURATION_SECONDS }}
           pat_token: ${{ secrets.BOT_TOKEN }}
           environment: ${{ inputs.environment }}
-
-  deploy:
+  
+  diff:
     needs: [ create_runner ]
     secrets: inherit
-    uses: ./.github/workflows/k8s-apply-sub.yaml
+    if: ${{ inputs.skipDiff == 'false' }}
+    uses: ./.github/workflows/pr-validation-sub-core-diff.yaml
     with:
       environment: ${{ inputs.environment }}
-      timeout_seconds: 180
 
   delete_runner:
-    name: Delete Self-Hosted Runner
-    needs: [create_runner, deploy]
+    name: "[${{ inputs.environment }}] Delete Self-Hosted Runner"
+    needs: [ diff ]
     if: ${{ always() }}
     runs-on: ubuntu-22.04
     environment: ${{ inputs.environment }}
     strategy:
       matrix:
-        index: [1,2,3,4,5,6,7,8]
+        index: [1,2,3]
       fail-fast: false
     steps:
       - name: Stop Github Runner
@@ -74,3 +91,4 @@ jobs:
           ecs_cluster_name: ${{ secrets.ECS_CLUSTER_NAME }}
           pat_token: ${{ secrets.BOT_TOKEN }}
           environment: ${{ inputs.environment }}
+    
