@@ -87,9 +87,15 @@ jobs:
           
           export PROJECT_DIR=$(pwd)
           $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --debug --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME --output console
+
+      - name: Microservice Kube-Linter
+        id: microservice_kube_lineter
+        env: 
+          MICROSERVICE_NAME: ${{ matrix.microservice }}
+        run: |
+          set -euo pipefail
           
-          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --debug --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME --output console > rendered.yaml
-          kube-linter lint rendered.yaml
+          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --debug --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME --output console | kube-linter lint -
 
       - name: Kubectl Diff
         id: kubectl_diff
@@ -160,10 +166,17 @@ jobs:
           
           export PROJECT_DIR=$(pwd)
           $SCRIPTS_FOLDER/helmTemplate-cron-single.sh --debug --environment ${{ inputs.environment }} --job $CRONJOB_NAME --output console
-
-          $SCRIPTS_FOLDER/helmTemplate-cron-single.sh --debug --environment ${{ inputs.environment }} --job $CRONJOB_NAME > rendered.yaml
-          kube-linter lint rendered.yaml
           
+      - name: Cronjob Kube-Linter
+        id: cronjob_kube_lineter
+        env: 
+          CRONJOB_NAME: ${{ matrix.cronjob }}
+        run: |
+          set -euo pipefail
+          
+          $SCRIPTS_FOLDER/helmTemplate-cron-single.sh --debug --environment ${{ inputs.environment }} --job $CRONJOB_NAME --output console | kube-linter lint -
+          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --debug --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME --output console | kube-linter lint -
+      
       - name: Kubectl Diff
         id: kubectl_diff
         env: 
