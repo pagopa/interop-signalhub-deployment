@@ -158,7 +158,7 @@ jobs:
           
           export PROJECT_DIR=$(pwd)
           echo "INFO - Apply changes for $MICROSERVICE_FULLNAME."
-          "$SCRIPTS_FOLDER/kubectlApply-svc-single-standalone.sh" --debug --environment "$K8S_NAMESPACE" -m "$MICROSERVICE_NAME" --output console
+          "$SCRIPTS_FOLDER/kubectlApply-svc-single-standalone.sh" --debug --environment "$K8S_NAMESPACE" -m "$MICROSERVICE_NAME" -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
 
           DESIRED_REPLICAS=$(kubectl get deployment "$MICROSERVICE_FULLNAME" -n "$K8S_NAMESPACE" -o jsonpath='{.spec.replicas}')
           echo "INFO - Desired replicas: $DESIRED_REPLICAS"
@@ -220,4 +220,4 @@ jobs:
           set -euo pipefail
 
           export PROJECT_DIR=$(pwd)
-          $SCRIPTS_FOLDER/kubectlApply-cron-single-standalone.sh --debug --environment $K8S_NAMESPACE -j $CRONJOB_NAME --output console 
+          $SCRIPTS_FOLDER/kubectlApply-cron-single-standalone.sh --debug --environment $K8S_NAMESPACE -j $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console 
