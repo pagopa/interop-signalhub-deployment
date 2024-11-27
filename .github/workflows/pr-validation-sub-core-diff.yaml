@@ -84,8 +84,6 @@ jobs:
         run: |
           set -euo pipefail
 
-          export PROJECT_DIR=$(pwd)
-
           set +e
           export PROJECT_DIR=$(pwd)
 
@@ -161,8 +159,6 @@ jobs:
           export PROJECT_DIR=$(pwd)
 
           set +e
-
-          export PROJECT_DIR=$(pwd)
           $SCRIPTS_FOLDER/kubectlDiff-cron-single-standalone.sh --environment ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
 
           DIFF_EXIT_CODE=$?
