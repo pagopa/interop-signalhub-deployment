@@ -64,7 +64,7 @@ jobs:
   delete_runner:
     name: "[${{ inputs.environment }}] Delete Self-Hosted Runner"
     needs: [ diff ]
-    if: ${{ always() }}
+    if: ${{ vars.ENABLE_KUBE_DIFF == 'true' }}
     runs-on: ubuntu-22.04
     environment: ${{ inputs.environment }}
     strategy:
