@@ -1,6 +1,7 @@
 name: "signalhub-be-eservice-event-consumer"
 
-roleArn: "arn:aws:iam::861276092552:role/signalhub-be-eservice-event-consumer-att"
+serviceAccount:
+  roleArn: "arn:aws:iam::861276092552:role/signalhub-be-eservice-event-consumer-att"
 
 service:
   create: false

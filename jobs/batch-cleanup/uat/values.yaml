@@ -1,16 +1,12 @@
 name: "signalhub-be-batch-cleanup"
 
-techStack: "nodejs"
-
-schedule: "0 * * * *"
-
-concurrencyPolicy: "Forbid"
-activeDeadlineSeconds: null
-
 configmap:
   SIGNALS_RETENTION_HOURS: "672"
 
-job:
+cronjob:
+  schedule: "0 * * * *"
+  concurrencyPolicy: "Forbid"
+  activeDeadlineSeconds: null
   env:
     LOG_LEVEL: INFO
   envFromConfigmaps:

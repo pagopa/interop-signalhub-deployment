@@ -3,10 +3,9 @@ name: "signalhub-be-load-testing"
 serviceAccount:
   roleArn: "arn:aws:iam::058264553932:role/signalhub-be-load-testing-dev"
 
-securityContext:
-  runAsUser: 0 # workaround due to Gatling writing files on restricted paths
-
 deployment:
+  securityContext:
+    runAsUser: 0 # workaround due to Gatling writing files on restricted paths
   env:
     BASE_URL: "https://api.dev.signalhub.interop.pagopa.it"
     S3_BUCKET: "signalhub-load-testing-reports-dev"

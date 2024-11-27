@@ -1,5 +1,4 @@
 namespace: "dev"
-
 techStack: "nodejs"
 
 deployment:

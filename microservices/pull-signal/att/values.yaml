@@ -1,6 +1,7 @@
 name: "signalhub-be-pull-signal"
 
-roleArn: "arn:aws:iam::861276092552:role/signalhub-be-pull-signal-att"
+serviceAccount:
+  roleArn: "arn:aws:iam::861276092552:role/signalhub-be-pull-signal-att"
 
 service:
   create: true
