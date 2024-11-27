@@ -5,7 +5,7 @@ images:
     eservice-event-consumer:
       tag: "develop"
     load-testing:
-      tag: "develop"
+      tag: "1.x-latest"
     pull-signal:
       tag: "develop"
     purpose-event-consumer:
