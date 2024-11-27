@@ -27,6 +27,7 @@ jobs:
   create_runner:
     name: "[${{ inputs.environment }}] Create Self-Hosted"
     runs-on: ubuntu-22.04
+    if: ${{ vars.ENABLE_KUBE_DIFF == 'true' }}
     needs: [ lint ]
     environment: ${{ inputs.environment }}
     outputs:
