@@ -17,6 +17,6 @@ jobs:
   
   diff_summary:
     needs: [ start_dev_workflow ]
-    if: ${{ always() }}
+    if: ${{ vars.ENABLE_KUBE_DIFF == 'true' }}
     secrets: inherit
     uses: ./.github/workflows/pr-validation-sub-print-summary.yaml
