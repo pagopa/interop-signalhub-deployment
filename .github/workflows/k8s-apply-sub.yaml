@@ -144,6 +144,29 @@ jobs:
       - name: Set kubeconfig
         run: |
           aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
+      - name: Kubectl Diff
+        id: kubectl_diff
+        env: 
+          MICROSERVICE_NAME: ${{ matrix.microservice }}
+        run: |
+          set -euo pipefail
+
+          set +e
+          export PROJECT_DIR=$(pwd)
+
+          $SCRIPTS_FOLDER/kubectlDiff-svc-single-standalone.sh --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
+
+          DIFF_EXIT_CODE=$?
+          set -e
+          
+          if [[ $DIFF_EXIT_CODE == 0 ]]; then
+            echo "Diff Output: No diff has been found for ${MICROSERVICE_NAME}"
+          elif [[ $DIFF_EXIT_CODE == 1 ]]; then
+            echo "Diff Output: Diff has been found for ${MICROSERVICE_NAME}"
+          else
+            echo "::error title=Diff Error::Error occurred during diff, exit code $DIFF_EXIT_CODE"
+            exit $DIFF_EXIT_CODE
+          fi
       - name: Deploy
         env:
           MICROSERVICE_NAME: ${{ matrix.microservice }}
@@ -213,6 +236,28 @@ jobs:
       - name: Set kubeconfig
         run: |
           aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
+      - name: Kubectl Diff
+        id: kubectl_diff
+        env: 
+          CRONJOB_NAME: ${{ matrix.cronjob }}
+        run: |
+          set -euo pipefail
+
+          export PROJECT_DIR=$(pwd)
+
+          set +e
+          $SCRIPTS_FOLDER/kubectlDiff-cron-single-standalone.sh --environment ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
+          DIFF_EXIT_CODE=$?
+          set -e
+          
+          if [[ $DIFF_EXIT_CODE == 0 ]]; then
+            echo "Diff Output: No diff has been found for ${CRONJOB_NAME}"
+          elif [[ $DIFF_EXIT_CODE == 1 ]]; then
+            echo "Diff Output: Diff has been found for ${CRONJOB_NAME}"
+          else
+            echo "::error title=Diff Error::Error occurred during diff, exit code $DIFF_EXIT_CODE"
+            exit $DIFF_EXIT_CODE
+          fi
       - name: Deploy
         env:
           CRONJOB_NAME: ${{ matrix.cronjob }}
