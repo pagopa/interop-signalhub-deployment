@@ -7,11 +7,6 @@ on:
         description: 'Environment to run diff against'
         required: true
         type: string
-    secrets:
-      AWS_REGION:
-        required: true
-      EKS_CLUSTER_NAME:
-        required: true
 
 permissions:
   id-token: write
