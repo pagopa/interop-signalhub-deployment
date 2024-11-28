@@ -107,10 +107,11 @@ jobs:
         run: |
           set -euo pipefail
 
+          set +e
           export PROJECT_DIR=$(pwd)
 
-          set +e
           $SCRIPTS_FOLDER/kubectlDiff-svc-single-standalone.sh --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
+
           DIFF_EXIT_CODE=$?
           set -e
           

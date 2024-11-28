@@ -1,6 +1,7 @@
 name: "signalhub-be-signal-persister"
 
-roleArn: "arn:aws:iam::861276092552:role/signalhub-be-signal-persister-att"
+serviceAccount:
+  roleArn: "arn:aws:iam::861276092552:role/signalhub-be-signal-persister-att"
 
 configmap:
   QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/861276092552/signalhub-push-signal-att"
