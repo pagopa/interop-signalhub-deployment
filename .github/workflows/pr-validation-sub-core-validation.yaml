@@ -8,10 +8,6 @@ on:
         required: true
         type: string
     secrets:
-      AWS_REGION:
-        required: true
-      EKS_CLUSTER_NAME:
-        required: true
       PRIVATE_REPOS_SSH_KEY:
         required: true
 
@@ -26,7 +22,6 @@ jobs:
   chart_validation:
     name: Helm Chart validation
     runs-on: ubuntu-22.04
-    environment: ${{ inputs.environment }}
     strategy:
       matrix:
         chartType: ["microservice", "cronjob"]
@@ -69,7 +64,6 @@ jobs:
   templating_setup:
     name: Setup steps
     runs-on: ubuntu-22.04
-    environment: ${{ inputs.environment }}
     env:
       TARGET_ENVIRONMENT: ${{ inputs.environment }}
     outputs:
@@ -88,7 +82,6 @@ jobs:
     name: ${{ matrix.microservice }}
     needs: [ templating_setup ]
     runs-on: ubuntu-22.04
-    environment: ${{ inputs.environment }}
     if: ${{ ! contains(needs.templating_setup.outputs.microservices, '[]') }}
     strategy:
       matrix:
@@ -122,7 +115,6 @@ jobs:
     name: ${{ matrix.cronjob }}
     needs: [ templating_setup ]
     runs-on: ubuntu-22.04
-    environment: ${{ inputs.environment }}
     if: ${{ ! contains(needs.templating_setup.outputs.cronjobs, '[]') }}
     strategy:
       matrix:
