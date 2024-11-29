@@ -11,7 +11,7 @@ service:
 
 configmap:
   ACCEPTED_AUDIENCE: "att.interop.pagopa.it/m2m"
-  API_PULL_VERSION: "v1"
+  API_VERSION: "1.0"
 
 deployment:
   flywayInitContainer:

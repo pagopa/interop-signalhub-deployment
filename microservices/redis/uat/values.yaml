@@ -1,0 +1,19 @@
+name: "signalhub-be-redis"
+
+service:
+  create: true
+  portName: redis
+  containerPort: 6379
+  targetPort: 6379
+
+deployment:
+  image:
+    repositoryPrefix: docker.io
+    repositoryName: "redis"
+    imagePullPolicy: Always
+    tag: "7.4.1-alpine3.20"
+    digest: "sha256:c1e88455c85225310bbea54816e9c3f4b5295815e6dbf80c34d40afc6df28275"
+  command: ["redis-server"]
+  # args: ["--appendonly", "no", "--save", '""'] # Disable persistence
+  livenessProbe:
+  readinessProbe:
