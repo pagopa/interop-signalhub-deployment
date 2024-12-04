@@ -8,6 +8,8 @@ deployment:
     runAsUser: 0 # workaround due to Gatling writing files on restricted paths
   env:
     BASE_URL: "https://api.dev.signalhub.interop.pagopa.it"
+    API_PUSH_VERSION: "1.0"
+    API_PULL_VERSION: "1.0"
     S3_BUCKET: "signalhub-load-testing-reports-dev"
     S3_FOLDER: "test_ramp_users"
   resources:
