@@ -13,6 +13,10 @@ configmap:
   ACCEPTED_AUDIENCE: "uat.interop.pagopa.it/m2m"
   QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/654654262692/signalhub-push-signal-uat"
   API_VERSION: "1.0"
+  RATE_LIMITER_MAX_REQUESTS: "50"
+  RATE_LIMITER_RATE_INTERVAL_MILLIS: "1000"
+  RATE_LIMITER_BURST_PERCENTAGE: "1"
+  RATE_LIMITER_TIMEOUT_MILLIS: "500"
 
 deployment:
   flywayInitContainer:
