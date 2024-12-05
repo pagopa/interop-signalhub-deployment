@@ -10,10 +10,10 @@ deployment:
     digest: $IMAGE_DIGEST_PLACEHOLDER
   resources:
     requests:
-      cpu: "2"
+      cpu: "1"
       memory: "2Gi"
     limits:
-      cpu: "2"
+      cpu: "1"
       memory: "2Gi"
   env:
     LOG_LEVEL: "info"
