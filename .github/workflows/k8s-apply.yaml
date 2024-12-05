@@ -18,9 +18,54 @@ permissions:
   contents: read
 
 jobs:
+  initChecks:
+    runs-on: ubuntu-22.04
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Check user is a ${{ vars.ALLOWED_DEPLOY_GH_TEAMS }} team member
+        id: checkUserPermissions
+        if: ${{ inputs.environment != 'dev' }}
+        env:
+            GITHUB_TOKEN: ${{ secrets.BOT_TEAMS_RO_PAT }}
+            ORG: ${{ github.repository_owner }}
+            TEAMS: ${{ vars.ALLOWED_DEPLOY_GH_TEAMS }}
+            USER: ${{ github.triggering_actor	}}
+        run: |
+          set -euo pipefail
+          TEAMS_LIST=$(echo $TEAMS | tr "," "\n")
+
+          CHECK_SUCCESS=0
+
+          for TEAM in $TEAMS_LIST; do
+            set +e
+            # Check current user membership with gh api 
+            echo "Check if user is member of $TEAM"           
+            GH_TEAM_MEMBERSHIP_RESPONSE=$(gh api -i --method GET -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" \/orgs/$ORG/teams/$TEAM/memberships/$USER)
+            set -e
+            
+            # Extract the HTTP status code
+            HTTP_CODE=$(echo $GH_TEAM_MEMBERSHIP_RESPONSE | head -n 1 | cut -d' ' -f 2)
+
+            if [[ $HTTP_CODE -eq 200 ]]; then
+              echo "User is member of $TEAM"
+              CHECK_SUCCESS=1
+              break
+            else
+              echo "User is NOT member of $TEAM"
+            fi
+          done
+            
+          if [[ $CHECK_SUCCESS -eq 0 ]]; then
+            echo "::error:: Resource not found. Please check the organization ($ORG), team ($TEAMS), and username ($USER). $USER is not memeber of specified teams."
+            exit 1
+          fi
+
+          echo "$USER has the correct permissions to execute the workflow."
+
   create_runner:
     name: Create Self-Hosted Runner
     runs-on: ubuntu-22.04
+    needs: [ initChecks ]
     environment: ${{ inputs.environment }}
     outputs:
       ecs_task_id: ${{ steps.start_runner.outputs.ecs_task_id }}
