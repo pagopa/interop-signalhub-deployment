@@ -17,6 +17,8 @@ images:
       digest: "sha256:c1e88455c85225310bbea54816e9c3f4b5295815e6dbf80c34d40afc6df28275"
     signal-persister:
       tag: "1.0.0"
+    delegation-event-consumer:
+      tag: "TBD"
   jobs:
     batch-cleanup:
       tag: "1.0.0"
