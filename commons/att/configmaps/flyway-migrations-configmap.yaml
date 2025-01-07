@@ -16,7 +16,6 @@ data:
       eservice_consumer_user,
       agreement_consumer_user,
       purpose_consumer_user;
-      
     GRANT USAGE ON SCHEMA "${NAMESPACE}_signalhub" TO
       batch_cleanup_user,
       pull_signal_user,
@@ -54,7 +53,6 @@ data:
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".eservice TO signal_persister_user;
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".eservice TO eservice_consumer_user;
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".eservice TO push_signal_user;
-
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_interop"."agreement" (
         agreement_id      VARCHAR (255) NOT NULL,
         eservice_id       VARCHAR (255) NOT NULL,
@@ -141,3 +139,15 @@ data:
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_signalhub".tracing_batch_cleanup TO batch_cleanup_user;
     GRANT SELECT, USAGE ON SEQUENCE "${NAMESPACE}_signalhub".tracing_batch_cleanup_batch_id_seq TO batch_cleanup_user;
+
+  V1.1__Delegation.sql: |-
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_interop"."delegation" (
+       delegation_id     VARCHAR (255) NOT NULL,
+       event_stream_id   VARCHAR (255) NOT NULL DEFAULT gen_random_uuid(),
+       event_version_id  BIGINT NOT NULL DEFAULT -1,
+       tmst_insert       TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+       tmst_last_edit    TIMESTAMPTZ,
+       UNIQUE (event_stream_id, event_version_id),
+       PRIMARY KEY (delegation_id)
+     );
+     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".delegation TO delegation_consumer_user;
