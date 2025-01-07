@@ -143,19 +143,19 @@ data:
     GRANT SELECT, USAGE ON SEQUENCE "${NAMESPACE}_signalhub".tracing_batch_cleanup_batch_id_seq TO batch_cleanup_user;
 
   V1.1__Delegation.sql: |-
-   CREATE TABLE IF NOT EXISTS "${NAMESPACE}_interop"."delegation" (
-      delegation_id     VARCHAR (255) NOT NULL,
-      delegate_id       VARCHAR (255) NOT NULL, 
-      delegator_id      VARCHAR (255) NOT NULL,
-      eservice_id       VARCHAR (255) NOT NULL,
-      "state"           VARCHAR (255) NOT NULL,
-      kind              VARCHAR (20) NOT NULL,
-      event_stream_id   VARCHAR (255) NOT NULL DEFAULT gen_random_uuid(),
-      event_version_id  BIGINT NOT NULL DEFAULT -1,
-      tmst_insert       TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-      tmst_last_edit    TIMESTAMPTZ,
-      UNIQUE(delegate_id, delegator_id, eservice_id),
-      PRIMARY KEY (delegation_id)
-    );
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_interop"."delegation" (
+       delegation_id     VARCHAR (255) NOT NULL,
+       delegate_id       VARCHAR (255) NOT NULL, 
+       delegator_id      VARCHAR (255) NOT NULL,
+       eservice_id       VARCHAR (255) NOT NULL,
+       "state"           VARCHAR (255) NOT NULL,
+       kind              VARCHAR (20) NOT NULL,
+       event_stream_id   VARCHAR (255) NOT NULL DEFAULT gen_random_uuid(),
+       event_version_id  BIGINT NOT NULL DEFAULT -1,
+       tmst_insert       TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+       tmst_last_edit    TIMESTAMPTZ,
+       UNIQUE (event_stream_id, event_version_id),
+       PRIMARY KEY (delegation_id)
+     );
 
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".delegation TO delegation_consumer_user;
+     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".delegation TO delegation_consumer_user;
