@@ -4,8 +4,6 @@ images:
       tag: "1.0.0-RC6"
     eservice-event-consumer:
       tag: "1.0.0-RC6"
-    load-testing:
-      tag: "1.x-latest"
     pull-signal:
       tag: "1.0.0-RC6"
     purpose-event-consumer:
