@@ -9,7 +9,7 @@ cronjob:
   resources:
     requests:
       cpu: "1"
-      memory: "2Gi" # CHECK THIS!
+      memory: "2Gi" # CHECK-THIS!
     limits:
       cpu: "1"
-      memory: "2Gi" # CHECK THIS!
+      memory: "2Gi" # CHECK-THIS!
