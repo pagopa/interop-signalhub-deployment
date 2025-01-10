@@ -1,0 +1,66 @@
+name: "signalhub-be-pull-signal"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::CHANGE-THIS:role/signalhub-be-pull-signal-prod"
+
+service:
+  create: true
+  portName: http
+  containerPort: 8088
+  targetGroupArn: "arn:aws:elasticloadbalancing:eu-south-1:CHANGE-THIS:targetgroup/prod-pull-signal/CHANGE-THIS"
+
+configmap:
+  ACCEPTED_AUDIENCE: "interop.pagopa.it/m2m"
+  API_VERSION: "1.0"
+  RATE_LIMITER_MAX_REQUESTS: "50"
+  RATE_LIMITER_RATE_INTERVAL_MILLIS: "1000"
+  RATE_LIMITER_BURST_PERCENTAGE: "1"
+  RATE_LIMITER_TIMEOUT_MILLIS: "500"
+
+deployment:
+  flywayInitContainer:
+    create: true
+    migrationsConfigmap: "common-flyway-migrations"
+    env:
+      FLYWAY_CREATE_SCHEMAS: true
+      FLYWAY_PLACEHOLDER_REPLACEMENT: true
+      FLYWAY_PLACEHOLDERS_NAMESPACE: "prod"
+      FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
+      FLYWAY_DEFAULT_SCHEMA: "prod_flyway"
+      FLYWAY_SCHEMAS: "prod_flyway,prod_interop,prod_signalhub"
+    envFromConfigmaps:
+      POSTGRES_HOST: "common-signal-store.DB_HOST_RW"
+      POSTGRES_PORT: "common-signal-store.DB_PORT"
+      POSTGRES_DB: "common-signal-store.DB_NAME"
+    envFromSecrets:
+      FLYWAY_USER: "signal-store-flyway-user.username"
+      FLYWAY_PASSWORD: "signal-store-flyway-user.password"
+  env:
+    HOST: "0.0.0.0"
+    PORT: 8088
+    SH_MAX_CONNECTION_POOL: "10"
+  envFromConfigmaps:
+    WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
+    SH_DB_HOST: "common-signal-store.DB_HOST_RO"
+    SH_DB_NAME: "common-signal-store.DB_NAME"
+    SH_DB_PORT: "common-signal-store.DB_PORT"
+    SH_DB_SIGNALHUB_SCHEMA: "common-signal-store.DB_SIGNALHUB_SCHEMA"
+    SH_DB_INTEROP_SCHEMA: "common-signal-store.DB_INTEROP_SCHEMA"
+    SH_DB_USE_SSL: "common-signal-store.DB_USE_SSL"
+    RATE_LIMITER_REDIS_HOST: common-redis.RL_HOST
+    RATE_LIMITER_REDIS_PORT: common-redis.RL_PORT
+  envFromSecrets:
+    SH_DB_USERNAME: "signal-store-pull-signal-user.username"
+    SH_DB_PASSWORD: "signal-store-pull-signal-user.password"
+  livenessProbe:
+    httpGet:
+      path: "/health"
+      port: http
+    periodSeconds: 5
+    initialDelaySeconds: 15
+  readinessProbe:
+    httpGet:
+      path: "/health"
+      port: http
+    periodSeconds: 5
+    initialDelaySeconds: 15
