@@ -4,7 +4,7 @@ serviceAccount:
   roleArn: "arn:aws:iam::CHANGE-THIS:role/signalhub-be-signal-persister-prod"
 
 configmap:
-  QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/CHANGE-THIS/signalhub-push-signal-prod"
+  QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/058264142001/signalhub-push-signal-prod"
 
 deployment:
   flywayInitContainer:
