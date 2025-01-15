@@ -4,7 +4,7 @@ techStack: "nodejs"
 deployment:
   replicas: 1
   image:
-    repositoryPrefix: "CHANGE-THIS.dkr.ecr.eu-south-1.amazonaws.com"
+    repositoryPrefix: "058264142001.dkr.ecr.eu-south-1.amazonaws.com"
     imagePullPolicy: Always
     tag: $IMAGE_TAG_PLACEHOLDER
     digest: $IMAGE_DIGEST_PLACEHOLDER
