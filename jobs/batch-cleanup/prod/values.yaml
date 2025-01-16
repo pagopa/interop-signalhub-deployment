@@ -1,7 +1,7 @@
 name: "signalhub-be-batch-cleanup"
 
 configmap:
-  SIGNALS_RETENTION_HOURS: "1680" # CHECK THIS! Now 10 weeks
+  SIGNALS_RETENTION_HOURS: "2016"
 
 cronjob:
   schedule: "0 * * * *"
