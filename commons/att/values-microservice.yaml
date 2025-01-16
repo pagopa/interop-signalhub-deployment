@@ -17,4 +17,3 @@ deployment:
       memory: "2Gi"
   env:
     LOG_LEVEL: "info"
-
