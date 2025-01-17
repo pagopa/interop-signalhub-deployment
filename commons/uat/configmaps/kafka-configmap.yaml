@@ -8,4 +8,3 @@ data:
   AGREEMENT_TOPIC: "outbound.test_agreement.events"
   ESERVICE_TOPIC: "outbound.test_catalog.events"
   PURPOSE_TOPIC: "outbound.test_purpose.events"
-  DELEGATION_TOPIC: "outbound.test_delegation.events"
