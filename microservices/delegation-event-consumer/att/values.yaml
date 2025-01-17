@@ -11,6 +11,7 @@ configmap:
   TOPIC_STARTING_OFFSET: "earliest"
 
 deployment:
+  replicas: 0
   flywayInitContainer:
     create: true
     migrationsConfigmap: "common-flyway-migrations"
