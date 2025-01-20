@@ -100,6 +100,15 @@ jobs:
       - name: Set kubeconfig
         run: |
           aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
+      - name: Helm Chart Template
+        id: helm_template
+        env: 
+          MICROSERVICE_NAME: ${{ matrix.microservice }}
+        run: |
+          set -euo pipefail
+          
+          export PROJECT_DIR=$(pwd)
+          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --debug --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
       - name: Kubectl Diff
         id: kubectl_diff
         env: 
@@ -192,6 +201,15 @@ jobs:
       - name: Set kubeconfig
         run: |
           aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
+      - name: Cronjob Helm Template
+        id: cronjob_helm_template
+        env: 
+          CRONJOB_NAME: ${{ matrix.cronjob }}
+        run: |
+          set -euo pipefail
+          
+          export PROJECT_DIR=$(pwd)
+          $SCRIPTS_FOLDER/helmTemplate-cron-single.sh --debug --environment ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console   
       - name: Kubectl Diff
         id: kubectl_diff
         env: 
