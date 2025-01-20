@@ -4,7 +4,7 @@ metadata:
   name: common-kafka
   namespace: dev
 data:
-  KAFKA_BROKERS: "b-3.iam.interopplatformevents.2doelu.c2.kafka.eu-south-1.amazonaws.com:14003,b-1.iam.interopplatformevents.2doelu.c2.kafka.eu-south-1.amazonaws.com:14001,b-2.iam.interopplatformevents.2doelu.c2.kafka.eu-south-1.amazonaws.com:14002"
+  KAFKA_BROKERS: "b-2.iam.interopplatformevents.gfkljw.c4.kafka.eu-south-1.amazonaws.com:14002,b-3.iam.interopplatformevents.gfkljw.c4.kafka.eu-south-1.amazonaws.com:14003,b-1.iam.interopplatformevents.gfkljw.c4.kafka.eu-south-1.amazonaws.com:14001"
   AGREEMENT_TOPIC: "outbound.prod_agreement.events"
   ESERVICE_TOPIC: "outbound.prod_catalog.events"
   PURPOSE_TOPIC: "outbound.prod_purpose.events"

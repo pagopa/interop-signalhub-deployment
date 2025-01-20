@@ -1,22 +1,22 @@
 images:
   microservices:
     agreement-event-consumer:
-      tag: "develop"
+      tag: "1.0.1-RC2"
     eservice-event-consumer:
-      tag: "develop"
+      tag: "1.0.1-RC2"
     load-testing:
       tag: "1.x-latest"
     pull-signal:
-      tag: "develop"
+      tag: "1.0.1-RC2"
     purpose-event-consumer:
-      tag: "develop"
+      tag: "1.0.1-RC2"
     push-signal:
-      tag: "develop"
+      tag: "1.0.1-RC2"
     redis:
       tag: "7.4.1-alpine3.20"
       digest: "sha256:c1e88455c85225310bbea54816e9c3f4b5295815e6dbf80c34d40afc6df28275"
     signal-persister:
-      tag: "develop"
+      tag: "1.0.1-RC2"
   jobs:
     batch-cleanup:
-      tag: "develop"
+      tag: "1.0.1-RC2"
