@@ -10,8 +10,6 @@ on:
     secrets:
       PRIVATE_REPOS_SSH_KEY:
         required: true
-      PRIVATE_REPOS_SSH_KEY:
-        required: true
 
 defaults:
   run:
