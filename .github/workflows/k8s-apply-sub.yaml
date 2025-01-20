@@ -100,8 +100,8 @@ jobs:
       - name: Set kubeconfig
         run: |
           aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
-      - name: Helm Chart Template
-        id: helm_template
+      - name: Microservice Helm Template
+        id: microservice_helm_template
         env: 
           MICROSERVICE_NAME: ${{ matrix.microservice }}
         run: |
