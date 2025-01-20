@@ -2,7 +2,7 @@ namespace: "prod"
 techStack: "nodejs"
 
 deployment:
-  replicas: 3 # CHECK-THIS
+  replicas: 2
   image:
     repositoryPrefix: "058264142001.dkr.ecr.eu-south-1.amazonaws.com"
     imagePullPolicy: Always
