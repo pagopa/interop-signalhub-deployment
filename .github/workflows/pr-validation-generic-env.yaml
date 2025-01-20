@@ -7,21 +7,6 @@ on:
         description: 'Environment to run diff against'
         required: true
         type: string
-      skipDiff:
-        description: 'Skip diff'
-        required: true
-        default: 'false'
-        type: string
-      applyTestMode:
-        description: 'Kubectl apply test mode on'
-        required: true
-        default: 'false'
-        type: string
-    secrets:
-      AWS_REGION:
-        required: true
-      EKS_CLUSTER_NAME:
-        required: true
 
 permissions:
   id-token: write
@@ -37,6 +22,7 @@ jobs:
   create_runner:
     name: "[${{ inputs.environment }}] Create Self-Hosted"
     runs-on: ubuntu-22.04
+    if: ${{ vars.ENABLE_KUBE_DIFF == 'true' }}
     needs: [ lint ]
     environment: ${{ inputs.environment }}
     outputs:
@@ -66,7 +52,6 @@ jobs:
   diff:
     needs: [ create_runner ]
     secrets: inherit
-    if: ${{ inputs.skipDiff == 'false' }}
     uses: ./.github/workflows/pr-validation-sub-core-diff.yaml
     with:
       environment: ${{ inputs.environment }}
@@ -74,7 +59,7 @@ jobs:
   delete_runner:
     name: "[${{ inputs.environment }}] Delete Self-Hosted Runner"
     needs: [ diff ]
-    if: ${{ always() }}
+    if: ${{ vars.ENABLE_KUBE_DIFF == 'true' }}
     runs-on: ubuntu-22.04
     environment: ${{ inputs.environment }}
     strategy:

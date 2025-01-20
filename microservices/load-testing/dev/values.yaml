@@ -1,31 +1,35 @@
 name: "signalhub-be-load-testing"
 
-roleArn: "arn:aws:iam::058264553932:role/signalhub-be-load-testing-dev"
-
-securityContext:
-  runAsUser: 0  # workaround due to Gatling writing files on restricted paths
+serviceAccount:
+  roleArn: "arn:aws:iam::058264553932:role/signalhub-be-load-testing-dev"
 
 deployment:
+  securityContext:
+    runAsUser: 0 # workaround due to Gatling writing files on restricted paths
   env:
     BASE_URL: "https://api.dev.signalhub.interop.pagopa.it"
+    API_PUSH_VERSION: "1.0"
+    API_PULL_VERSION: "1.0"
+    S3_BUCKET: "signalhub-load-testing-reports-dev"
+    S3_FOLDER: "test_ramp_users"
   resources:
     requests:
       cpu: "16"
       memory: "32Gi"
     limits:
       cpu: "16"
-      memory: "32Gi"    
+      memory: "32Gi"
   livenessProbe:
     exec:
       command:
-      - touch
-      - /tmp/healthy
+        - touch
+        - /tmp/healthy
     periodSeconds: 5
     initialDelaySeconds: 15
   readinessProbe:
     exec:
       command:
-      - touch
-      - /tmp/healthy
+        - touch
+        - /tmp/healthy
     periodSeconds: 5
     initialDelaySeconds: 15
