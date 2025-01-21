@@ -1,18 +1,18 @@
 name: "signalhub-be-pull-signal"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::CHANGE-THIS:role/signalhub-be-pull-signal-prod"
+  roleArn: "arn:aws:iam::058264142001:role/signalhub-be-pull-signal-prod"
 
 service:
   create: true
   portName: http
   containerPort: 8088
-  targetGroupArn: "arn:aws:elasticloadbalancing:eu-south-1:CHANGE-THIS:targetgroup/prod-pull-signal/CHANGE-THIS"
+  targetGroupArn: "arn:aws:elasticloadbalancing:eu-south-1:058264142001:targetgroup/prod-pull-signal/80b5a3fa54f80e0d"
 
 configmap:
   ACCEPTED_AUDIENCE: "interop.pagopa.it/m2m"
   API_VERSION: "1.0"
-  RATE_LIMITER_MAX_REQUESTS: "25" # CHECK-THIS
+  RATE_LIMITER_MAX_REQUESTS: "25"
   RATE_LIMITER_RATE_INTERVAL_MILLIS: "1000"
   RATE_LIMITER_BURST_PERCENTAGE: "1"
   RATE_LIMITER_TIMEOUT_MILLIS: "500"

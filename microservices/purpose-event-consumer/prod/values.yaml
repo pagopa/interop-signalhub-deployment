@@ -1,7 +1,7 @@
 name: "signalhub-be-purpose-event-consumer"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::CHANGE-THIS:role/signalhub-be-purpose-event-consumer-prod"
+  roleArn: "arn:aws:iam::058264142001:role/signalhub-be-purpose-event-consumer-prod"
 
 service:
   create: false
