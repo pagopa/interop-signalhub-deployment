@@ -2,6 +2,8 @@ images:
   microservices:
     agreement-event-consumer:
       tag: "develop"
+    delegation-event-consumer:
+      tag: "develop"
     eservice-event-consumer:
       tag: "develop"
     load-testing:
