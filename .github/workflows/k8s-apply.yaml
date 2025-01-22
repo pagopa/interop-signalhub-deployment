@@ -94,8 +94,8 @@ jobs:
   create_runner:
     name: Create Self-Hosted Runner
     runs-on: ubuntu-22.04
-    if: ${{ inputs.run_k8s_workflow }}
-    environment: ${{ inputs.environment || inputs.run_tf_apply_secrets_workflow }}
+    if: ${{ inputs.run_k8s_workflow || inputs.run_tf_apply_secrets_workflow }}
+    environment: ${{ inputs.environment }}
     needs: [ initChecks ]
     outputs:
       ecs_task_id: ${{ steps.start_runner.outputs.ecs_task_id }}
