@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-redis
+  namespace: prod
+data:
+  RL_HOST: "signalhub-be-redis.prod"
+  RL_PORT: "6379"
