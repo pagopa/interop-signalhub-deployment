@@ -1,4 +1,4 @@
-name: TF Apply
+name: TF Apply Monitoring
 
 on: 
   workflow_call:
@@ -11,11 +11,6 @@ on:
         description: 'Terraform apply wait timeout in seconds'
         required: true
         type: number
-    secrets:
-      AWS_REGION:
-        required: true
-      TERRAFORM_IAM_ROLE_ARN:
-        required: true
 
 defaults:
   run:

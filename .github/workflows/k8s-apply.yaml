@@ -17,8 +17,13 @@ on:
         required: true
         default: true
         type: boolean
-      run_tf_workflow:
-        description: 'Run TF workflow'
+      run_tf_apply_monitoring_workflow:
+        description: 'Run tf_apply_monitoring workflow'
+        required: true
+        default: true
+        type: boolean
+      run_tf_apply_secrets_workflow:
+        description: 'Run tf_apply_secrets workflow'
         required: true
         default: true
         type: boolean
@@ -39,7 +44,8 @@ jobs:
           echo "- ref: \`${{ github.ref }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- force_restart: \`${{ inputs.force_restart }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- run_k8s_workflow: \`${{ inputs.run_k8s_workflow }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- run_tf_workflow: \`${{ inputs.run_tf_workflow }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- run_tf_apply_monitoring_workflow: \`${{ inputs.run_tf_apply_monitoring_workflow }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- run_tf_apply_secrets_workflow: \`${{ inputs.run_tf_apply_secrets_workflow }}\`" >> $GITHUB_STEP_SUMMARY
 
   initChecks:
     runs-on: ubuntu-22.04
@@ -89,7 +95,7 @@ jobs:
     name: Create Self-Hosted Runner
     runs-on: ubuntu-22.04
     if: ${{ inputs.run_k8s_workflow }}
-    environment: ${{ inputs.environment }}
+    environment: ${{ inputs.environment || inputs.run_tf_apply_secrets_workflow }}
     needs: [ initChecks ]
     outputs:
       ecs_task_id: ${{ steps.start_runner.outputs.ecs_task_id }}
@@ -124,10 +130,19 @@ jobs:
       environment: ${{ inputs.environment }}
       timeout_seconds: 180
 
+  tf_apply_secrets:
+    needs: [initChecks, create_runner]
+    secrets: inherit
+    if: ${{ inputs.run_tf_apply_secrets_workflow }}
+    uses: ./.github/workflows/tf-apply-secrets.yaml
+    with:
+      environment: ${{ inputs.environment }}
+      timeout_seconds: 300
+
   delete_runner:
     name: Delete Self-Hosted Runner
-    needs: [create_runner, deploy]
-    if: ${{ always() && inputs.run_k8s_workflow }}
+    needs: [create_runner, deploy, tf_apply_secrets]
+    if: ${{ always() && (inputs.run_k8s_workflow || inputs.run_tf_apply_secrets_workflow) }}
     runs-on: ubuntu-22.04
     environment: ${{ inputs.environment }}
     strategy:
@@ -145,11 +160,11 @@ jobs:
           pat_token: ${{ secrets.BOT_TOKEN }}
           environment: ${{ inputs.environment }}
 
-  tf_apply:
+  tf_apply_monitoring:
     needs: [ initChecks ]
     secrets: inherit
-    if: ${{ inputs.run_tf_workflow }}
-    uses: ./.github/workflows/tf-apply.yaml
+    if: ${{ inputs.run_tf_apply_monitoring_workflow }}
+    uses: ./.github/workflows/tf-apply-monitoring.yaml
     with:
       environment: ${{ inputs.environment }}
       timeout_seconds: 300
