@@ -9,7 +9,7 @@ images:
     load-testing:
       tag: "1.x-latest"
     pull-signal:
-      tag: "develop"
+      tag: "1.0.3-RC1"
     purpose-event-consumer:
       tag: "develop"
     push-signal:
