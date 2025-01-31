@@ -141,3 +141,7 @@ data:
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_signalhub".tracing_batch_cleanup TO batch_cleanup_user;
     GRANT SELECT, USAGE ON SEQUENCE "${NAMESPACE}_signalhub".tracing_batch_cleanup_batch_id_seq TO batch_cleanup_user;
+
+  V1.0.1__BIGINT_ID.sql: |-
+    ALTER TABLE IF EXISTS "dev_signalhub"."signal" ALTER COLUMN ID SET DATA TYPE BIGINT; 
+    ALTER TABLE IF EXISTS "dev_signalhub"."dead_signal" ALTER COLUMN ID SET DATA TYPE BIGINT;
