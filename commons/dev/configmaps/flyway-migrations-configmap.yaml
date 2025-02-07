@@ -167,6 +167,5 @@ data:
 
      GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".delegation TO delegation_consumer_user;
 
-  V1.2__New_columns.sql: |-
     ALTER TABLE IF EXISTS "${NAMESPACE}_interop"."eservice" ADD COLUMN client_access_delegable BOOLEAN;
     ALTER TABLE IF EXISTS "${NAMESPACE}_interop"."purpose" ADD COLUMN delegation_id VARCHAR (255);
