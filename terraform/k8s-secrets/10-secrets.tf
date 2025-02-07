@@ -1,31 +1,31 @@
-data "aws_secretsmanager_secrets" "signal_store_users" {
+data "aws_secretsmanager_secrets" "tagged" {
   filter {
     name   = "tag-key"
     values = ["EKSClusterName"]
   }
 }
 
-data "aws_secretsmanager_secret" "signal_store_users_object" {
-  depends_on = [data.aws_secretsmanager_secrets.signal_store_users]
+data "aws_secretsmanager_secret" "tagged_object" {
+  depends_on = [data.aws_secretsmanager_secrets.tagged]
 
-  for_each = toset(data.aws_secretsmanager_secrets.signal_store_users.names)
+  for_each = toset(data.aws_secretsmanager_secrets.tagged.names)
 
   name = each.value
 }
 
-data "aws_secretsmanager_secret_version" "signal_store_users" {
-  depends_on = [data.aws_secretsmanager_secret.signal_store_users_object]
+data "aws_secretsmanager_secret_version" "filtered" {
+  depends_on = [data.aws_secretsmanager_secret.tagged_object]
 
-  for_each = { for key, object in data.aws_secretsmanager_secret.signal_store_users_object : key => object if object.tags["EKSClusterName"] == var.eks_cluster_name }
+  for_each = { for key, object in data.aws_secretsmanager_secret.tagged_object : key => object if object.tags["EKSClusterName"] == var.eks_cluster_name }
 
   secret_id = each.value.name
 }
 
 locals {
   sv_namespaces_pairs = flatten([
-    for sv_key, sv_value in data.aws_secretsmanager_secret_version.signal_store_users : [
-      for ns in toset(split(" ", (data.aws_secretsmanager_secret.signal_store_users_object[sv_key].tags["EKSClusterNamespacesSpaceSeparated"]))) : {
-        eks_replica_secret_name = data.aws_secretsmanager_secret.signal_store_users_object[sv_value.secret_id].tags["EKSReplicaSecretName"],
+    for sv_key, sv_value in data.aws_secretsmanager_secret_version.filtered : [
+      for ns in toset(split(" ", (data.aws_secretsmanager_secret.tagged_object[sv_key].tags["EKSClusterNamespacesSpaceSeparated"]))) : {
+        eks_replica_secret_name = data.aws_secretsmanager_secret.tagged_object[sv_value.secret_id].tags["EKSReplicaSecretName"],
         secret_version          = sv_value,
         namespace               = ns
       }
@@ -34,14 +34,14 @@ locals {
 }
 
 resource "time_static" "secret_string_update" {
-  for_each = data.aws_secretsmanager_secret_version.signal_store_users
+  for_each = data.aws_secretsmanager_secret_version.filtered
 
   triggers = {
     secret_string = each.value.secret_string
   }
 }
 
-resource "kubernetes_secret_v1" "signal_store_users" {
+resource "kubernetes_secret_v1" "replicated" {
   depends_on = [time_static.secret_string_update]
 
   for_each = { for elem in local.sv_namespaces_pairs : "${elem.namespace}/${elem.eks_replica_secret_name}" => elem }
