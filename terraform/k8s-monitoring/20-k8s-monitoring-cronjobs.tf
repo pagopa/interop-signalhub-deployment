@@ -6,30 +6,33 @@ locals {
   cronjobs_names = jsondecode(data.local_file.cronjobs_list.content)
 }
 
-resource "aws_cloudwatch_metric_alarm" "cronjob_errors" {
+module "k8s_cronjob_monitoring" {
   for_each = toset(local.cronjobs_names)
 
-  alarm_name        = format("k8s-cronjob-%s-errors-%s", each.key, var.env)
-  alarm_description = format("Cronjob errors alarm for %s", each.key)
+# VERIFY THE TAG VALUE
+  source = "git::https://github.com/pagopa/interop-infra-commons//terraform/modules/k8s-workload-monitoring?ref=v1.5.4"
 
-  alarm_actions = [data.aws_sns_topic.platform_alarms.arn]
+# Assign workload kind value
+  kind = "CronJob"
 
-  metric_name = try(data.external.cloudwatch_log_metric_filters.result.metricName, null)
-  namespace   = try(data.external.cloudwatch_log_metric_filters.result.metricNamespace, null)
+  env               = var.env
+  eks_cluster_name  = var.eks_cluster_name
+  k8s_namespace     = var.env
 
-  dimensions = {
-    PodApp       = each.key
-    PodNamespace = var.env
-  }
+  k8s_cronjob_name = each.key
 
-  comparison_operator = "GreaterThanOrEqualToThreshold"
-  statistic           = "Sum"
-  treat_missing_data  = "notBreaching"
+  create_cronjob_performance_alarm      = true
+  create_cronjob_app_logs_errors_alarm  = true
 
-  threshold           = 1
-  period              = 60 # 1 minute
-  evaluation_periods  = 5
-  datapoints_to_alarm = 1
+  cronjob_avg_cpu_alarm_threshold           = 70
+  cronjob_avg_memory_alarm_threshold        = 70
+  cronjob_performance_alarms_period_seconds = 300 # 5 minutes
+
+
+  cronjob_cloudwatch_app_logs_errors_metric_name      = try(data.external.cloudwatch_log_metric_filters.result.metricName, null)
+  cronjob_cloudwatch_app_logs_errors_metric_namespace = try(data.external.cloudwatch_log_metric_filters.result.metricNamespace, null)
+
+  sns_topics_arns     = [data.aws_sns_topic.platform_alarms.arn]
 
   tags = var.tags
 }
