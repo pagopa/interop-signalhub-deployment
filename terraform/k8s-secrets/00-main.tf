@@ -39,3 +39,7 @@ provider "kubernetes" {
 }
 
 data "aws_caller_identity" "current" {}
+
+locals {
+  terraform_states_list = ["core"]
+}
