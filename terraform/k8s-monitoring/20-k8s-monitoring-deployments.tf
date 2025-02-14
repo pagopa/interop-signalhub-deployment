@@ -10,7 +10,7 @@ module "k8s_deployment_monitoring" {
   for_each = toset(local.microservices_names)
 
 # VERIFY THE TAG VALUE
-  source = "git::https://github.com/pagopa/interop-infra-commons//terraform/modules/k8s-workload-monitoring?ref=v1.5.4"
+  source = "git::https://github.com/pagopa/interop-infra-commons//terraform/modules/k8s-workload-monitoring?ref=v1.6.0"
 
 # Assign workload kind value
   kind = "Deployment"
