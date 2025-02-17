@@ -121,17 +121,8 @@ jobs:
           pat_token: ${{ secrets.BOT_TOKEN }}
           environment: ${{ inputs.environment }}
 
-  deploy:
-    needs: [ create_runner ]
-    secrets: inherit
-    if: ${{ inputs.run_k8s_workflow }}
-    uses: ./.github/workflows/k8s-apply-sub.yaml
-    with:
-      environment: ${{ inputs.environment }}
-      timeout_seconds: 180
-
   tf_apply_secrets:
-    needs: [initChecks, create_runner]
+    needs: [ create_runner]
     secrets: inherit
     if: ${{ inputs.run_tf_apply_secrets_workflow }}
     uses: ./.github/workflows/tf-apply-secrets.yaml
@@ -139,15 +130,24 @@ jobs:
       environment: ${{ inputs.environment }}
       timeout_seconds: 300
 
+  deploy:
+    needs: [ create_runner, tf_apply_secrets ]
+    secrets: inherit
+    if: ${{ always() && (inputs.run_k8s_workflow && ((!inputs.run_tf_apply_secrets_workflow && needs.tf_apply_secrets.result == 'skipped') || inputs.run_tf_apply_secrets_workflow)) }}
+    uses: ./.github/workflows/k8s-apply-sub.yaml
+    with:
+      environment: ${{ inputs.environment }}
+      timeout_seconds: 180
+
   delete_runner:
     name: Delete Self-Hosted Runner
-    needs: [create_runner, deploy, tf_apply_secrets]
-    if: ${{ always() && (inputs.run_k8s_workflow || inputs.run_tf_apply_secrets_workflow) }}
+    needs: [ create_runner, deploy, tf_apply_secrets ]
+    if: ${{ always() && ( (inputs.run_k8s_workflow && ((!inputs.run_tf_apply_secrets_workflow && needs.tf_apply_secrets.result == 'skipped') || inputs.run_tf_apply_secrets_workflow)) || inputs.run_tf_apply_secrets_workflow ) }}
     runs-on: ubuntu-22.04
     environment: ${{ inputs.environment }}
     strategy:
       matrix:
-        index: [1,2,3,4,5,6,7,8]
+        index: [1,2,3,4,5,6,7,8,9,10]
       fail-fast: false
     steps:
       - name: Stop Github Runner
