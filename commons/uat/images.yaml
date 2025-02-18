@@ -2,6 +2,8 @@ images:
   microservices:
     agreement-event-consumer:
       tag: "1.0.4-RC1"
+    delegation-event-consumer:
+      tag: "1.0.4-RC1"
     eservice-event-consumer:
       tag: "1.0.4-RC1"
     pull-signal:
