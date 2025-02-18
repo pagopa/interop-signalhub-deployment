@@ -145,3 +145,27 @@ data:
   V1.0.1__BIGINT_ID.sql: |-
     ALTER TABLE IF EXISTS "${NAMESPACE}_signalhub"."signal" ALTER COLUMN ID SET DATA TYPE BIGINT; 
     ALTER TABLE IF EXISTS "${NAMESPACE}_signalhub"."dead_signal" ALTER COLUMN ID SET DATA TYPE BIGINT;
+
+  V1.1__Delegation.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_interop" TO
+      delegation_consumer_user;
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_interop"."delegation" (
+       delegation_id     VARCHAR (255) NOT NULL,
+       delegate_id       VARCHAR (255) NOT NULL, 
+       delegator_id      VARCHAR (255) NOT NULL,
+       eservice_id       VARCHAR (255) NOT NULL,
+       "state"           VARCHAR (255) NOT NULL,
+       kind              VARCHAR (20) NOT NULL,
+       event_stream_id   VARCHAR (255) NOT NULL DEFAULT gen_random_uuid(),
+       event_version_id  BIGINT NOT NULL DEFAULT -1,
+       tmst_insert       TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+       tmst_last_edit    TIMESTAMPTZ,
+       UNIQUE (event_stream_id, event_version_id),
+       PRIMARY KEY (delegation_id)
+     );
+
+     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_interop".delegation TO delegation_consumer_user;
+
+    ALTER TABLE IF EXISTS "${NAMESPACE}_interop"."eservice" ADD COLUMN client_access_delegable BOOLEAN;
+    ALTER TABLE IF EXISTS "${NAMESPACE}_interop"."purpose" ADD COLUMN delegation_id VARCHAR (255);
