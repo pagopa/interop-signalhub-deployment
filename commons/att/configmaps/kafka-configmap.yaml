@@ -8,3 +8,4 @@ data:
   AGREEMENT_TOPIC: "outbound.att_agreement.events"
   ESERVICE_TOPIC: "outbound.att_catalog.events"
   PURPOSE_TOPIC: "outbound.att_purpose.events"
+  DELEGATION_TOPIC: "outbound.att_delegation.events"
