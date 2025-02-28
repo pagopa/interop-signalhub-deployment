@@ -19,7 +19,7 @@ module "k8s_deployment_monitoring" {
   eks_cluster_name  = var.eks_cluster_name
   k8s_namespace     = var.env
 
-  k8s_deployment_name = each.key
+  k8s_workload_name = each.key
 
   create_performance_alarm      = true
   create_app_logs_errors_alarm  = true
