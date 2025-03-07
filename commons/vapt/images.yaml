@@ -1,0 +1,22 @@
+images:
+  microservices:
+    agreement-event-consumer:
+      tag: "1.0.4"
+    delegation-event-consumer:
+      tag: "1.0.4"
+    eservice-event-consumer:
+      tag: "1.0.4"
+    pull-signal:
+      tag: "1.0.4"
+    purpose-event-consumer:
+      tag: "1.0.4"
+    push-signal:
+      tag: "1.0.4"
+    redis:
+      tag: "7.4.1-alpine3.20"
+      digest: "sha256:c1e88455c85225310bbea54816e9c3f4b5295815e6dbf80c34d40afc6df28275"
+    signal-persister:
+      tag: "1.0.4"
+  jobs:
+    batch-cleanup:
+      tag: "1.0.4"

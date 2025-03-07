@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-jwt
+  namespace: vapt
+data:
+  WELL_KNOWN_URLS: "https://signalhub-qa-only-well-known-dev.s3.eu-south-1.amazonaws.com/.well-known/jwks.json,https://dev.interop.pagopa.it/.well-known/jwks.json"
