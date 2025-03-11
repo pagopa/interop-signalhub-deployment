@@ -9,7 +9,7 @@ images:
     pull-signal:
       tag: "1.0.4"
     purpose-event-consumer:
-      tag: "1.0.4"
+      tag: "1.0.5"
     push-signal:
       tag: "1.0.4"
     redis:
