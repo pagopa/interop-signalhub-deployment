@@ -137,9 +137,9 @@ jobs:
 #   OR
 #   we want to apply secrets to k8s (inputs.run_tf_apply_secrets_workflow && needs.tf_apply_secrets.result == 'success')
 ###
-# Note: always() is required because the following job has a dependency with tf_apply_secrets job.
-# In case we don’t want to deploy secrets to k8s, the tf_apply_secrets job would be skipped and the current job would be skipped as well.
-# So, always() overrides this dependency, helping to execute the following job even when tf_apply_secrets job is skipped.
+# Note: always() is required because the following job has a dependency with 'tf_apply_secrets' job.
+# In case we don’t want to deploy secrets to k8s, the 'tf_apply_secrets' job would be skipped and the current job would be skipped as well.
+# So, always() overrides this dependency, helping to execute the following job even when 'tf_apply_secrets' job is skipped.
 
   deploy:
     needs: [ create_runner, tf_apply_secrets ]
