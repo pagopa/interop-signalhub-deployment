@@ -2,6 +2,6 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: common-time-window
-  namespace: dev
+  namespace: att
 data:
   TIME_WINDOW_DURATION_IN_SECONDS: "10"
