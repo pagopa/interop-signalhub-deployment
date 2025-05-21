@@ -16,10 +16,6 @@ configmap:
   RATE_LIMITER_RATE_INTERVAL_MILLIS: "1000"
   RATE_LIMITER_BURST_PERCENTAGE: "1"
   RATE_LIMITER_TIMEOUT_MILLIS: "500"
-  FEATURE_FLAG_SIGNALHUB_WHITELIST: "true"
-  SIGNALHUB_WHITELIST: "e5c45d3a-216e-4cd6-b93b-295935c9ccd0"
-  FEATURE_FLAG_TIME_WINDOW: "true"
-  TIME_WINDOW_DURATION_IN_SECONDS: "30"  
 
 deployment:
   flywayInitContainer:
@@ -53,6 +49,9 @@ deployment:
     SH_DB_USE_SSL: "common-signal-store.DB_USE_SSL"
     RATE_LIMITER_REDIS_HOST: common-redis.RL_HOST
     RATE_LIMITER_REDIS_PORT: common-redis.RL_PORT
+    FEATURE_FLAG_TIME_WINDOW: common-feature-flags.FEATURE_FLAG_TIME_WINDOW
+    TIME_WINDOW_DURATION_IN_SECONDS: common-time-window.TIME_WINDOW_DURATION_IN_SECONDS
+    FEATURE_FLAG_SIGNALHUB_WHITELIST: common-feature-flags.FEATURE_FLAG_SIGNALHUB_WHITELIST
   envFromSecrets:
     SH_DB_USERNAME: "signal-store-pull-signal-user.username"
     SH_DB_PASSWORD: "signal-store-pull-signal-user.password"
