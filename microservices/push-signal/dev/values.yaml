@@ -40,6 +40,7 @@ deployment:
   env:
     HOST: "0.0.0.0"
     PORT: 8088
+    KEEP_ALIVE_TIMEOUT_MILLIS: "61000"
     SH_MAX_CONNECTION_POOL: "10"
   envFromConfigmaps:
     WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
