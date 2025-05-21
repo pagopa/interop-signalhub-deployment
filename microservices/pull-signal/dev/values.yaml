@@ -16,13 +16,25 @@ configmap:
   RATE_LIMITER_RATE_INTERVAL_MILLIS: "1000"
   RATE_LIMITER_BURST_PERCENTAGE: "1"
   RATE_LIMITER_TIMEOUT_MILLIS: "500"
-  FEATURE_FLAG_SIGNALHUB_WHITELIST: "true"
-  # PUT IN WHITELIST EVEN THE ORGANIZATION NEEDED BY QA TEST
-  SIGNALHUB_WHITELIST: "e79a24cd-8edc-441e-ae8d-e87c3aea0059,69e2865e-65ab-4e48-a638-2037a9ee2ee7,05937ccb-951e-47e4-b48e-e9dcaf053097"
-  FEATURE_FLAG_TIME_WINDOW: "true"
-  TIME_WINDOW_DURATION_IN_SECONDS: "10"
 
 deployment:
+  flywayInitContainer:
+    create: true
+    migrationsConfigmap: "common-flyway-migrations"
+    env:
+      FLYWAY_CREATE_SCHEMAS: true
+      FLYWAY_PLACEHOLDER_REPLACEMENT: true
+      FLYWAY_PLACEHOLDERS_NAMESPACE: "dev"
+      FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
+      FLYWAY_DEFAULT_SCHEMA: "dev_flyway"
+      FLYWAY_SCHEMAS: "dev_flyway,dev_interop,dev_signalhub"
+    envFromConfigmaps:
+      POSTGRES_HOST: "common-signal-store.DB_HOST_RW"
+      POSTGRES_PORT: "common-signal-store.DB_PORT"
+      POSTGRES_DB: "common-signal-store.DB_NAME"
+    envFromSecrets:
+      FLYWAY_USER: "signal-store-flyway-user.username"
+      FLYWAY_PASSWORD: "signal-store-flyway-user.password"
   env:
     HOST: "0.0.0.0"
     PORT: 8088
@@ -37,6 +49,9 @@ deployment:
     SH_DB_USE_SSL: "common-signal-store.DB_USE_SSL"
     RATE_LIMITER_REDIS_HOST: common-redis.RL_HOST
     RATE_LIMITER_REDIS_PORT: common-redis.RL_PORT
+    FEATURE_FLAG_TIME_WINDOW: common-feature-flags.FEATURE_FLAG_TIME_WINDOW
+    TIME_WINDOW_DURATION_IN_SECONDS: common-time-window.TIME_WINDOW_DURATION_IN_SECONDS
+    FEATURE_FLAG_SIGNALHUB_WHITELIST: common-feature-flags.FEATURE_FLAG_SIGNALHUB_WHITELIST
   envFromSecrets:
     SH_DB_USERNAME: "signal-store-pull-signal-user.username"
     SH_DB_PASSWORD: "signal-store-pull-signal-user.password"
