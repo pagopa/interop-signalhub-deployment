@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-time-window
+  namespace: dev
+data:
+  TIME_WINDOW_DURATION_IN_SECONDS: "10"
