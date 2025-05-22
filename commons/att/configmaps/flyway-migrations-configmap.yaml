@@ -172,3 +172,6 @@ data:
 
   V1.1.1__Grant_delegation_on_pull.sql: |-
     GRANT SELECT ON TABLE "${NAMESPACE}_interop".delegation TO pull_signal_user;
+
+  V1.1.2__Index_on_signal_for_time_window.sql: |-
+    CREATE INDEX IF NOT exists signal_index_eservice_id_signal_id_tmst_insert ON "${NAMESPACE}_signalhub"."signal"(eservice_id, signal_id, tmst_insert);
