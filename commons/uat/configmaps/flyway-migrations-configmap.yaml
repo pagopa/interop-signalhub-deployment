@@ -180,4 +180,4 @@ data:
     GRANT USAGE ON SCHEMA "${NAMESPACE}_interop" TO readonly_user;
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_interop" TO readonly_user;
     GRANT USAGE ON SCHEMA "${NAMESPACE}_signalhub" TO readonly_user;
-    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_interop" TO readonly_user;
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_signalhub" TO readonly_user;
