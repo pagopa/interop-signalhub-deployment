@@ -175,3 +175,9 @@ data:
 
   V1.1.2__Index_on_signal_for_time_window.sql: |-
     CREATE INDEX IF NOT exists signal_index_eservice_id_signal_id_tmst_insert ON "${NAMESPACE}_signalhub"."signal"(eservice_id, signal_id, tmst_insert);
+
+  V1.1.3__Grant_readonly_user.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_interop" TO readonly_user;
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_interop" TO readonly_user;
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_signalhub" TO readonly_user;
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_interop" TO readonly_user;
