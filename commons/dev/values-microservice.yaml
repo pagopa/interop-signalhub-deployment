@@ -2,7 +2,7 @@ namespace: "dev"
 techStack: "nodejs"
 
 deployment:
-  replicas: 1
+  replicas: 0 # enable only during develop
   image:
     repositoryPrefix: "058264142001.dkr.ecr.eu-south-1.amazonaws.com"
     imagePullPolicy: Always
