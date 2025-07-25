@@ -25,7 +25,7 @@ jobs:
       resolved_infra_commons_tag: ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag }}
     steps:
       - name: Checkout caller repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
         with:
           ref: ${{ github.ref }}
 
@@ -62,7 +62,7 @@ jobs:
       matrix:
         environment: [att, dev, qa, uat]
     secrets: inherit
-    uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation.yaml@v1.27.0
+    uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation.yaml@359432bdb2b61c26fd2a2a79e5aded2da1848809 # v1.27.0
     with:
       infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag }}
       environment: ${{ matrix.environment }}
