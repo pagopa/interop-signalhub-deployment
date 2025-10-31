@@ -5,4 +5,3 @@ metadata:
   namespace: dev
 data:
   FEATURE_FLAG_TIME_WINDOW: "true"
-  FEATURE_FLAG_SIGNALHUB_WHITELIST: "false"
