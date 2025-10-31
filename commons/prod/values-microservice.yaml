@@ -2,6 +2,7 @@ namespace: "prod"
 techStack: "nodejs"
 
 deployment:
+  enableRolloutAnnotations: true
   replicas: 2
   image:
     repositoryPrefix: "058264142001.dkr.ecr.eu-south-1.amazonaws.com"
