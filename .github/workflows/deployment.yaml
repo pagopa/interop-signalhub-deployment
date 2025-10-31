@@ -194,6 +194,7 @@ jobs:
     with:
       environment: ${{ inputs.environment }}
       infra_commons_tag: ${{ needs.initChecks.outputs.infra_commons_tag_computed }}
+      timeout_seconds: 300
 
   delete_runner:
     name: Delete Self-Hosted Runner
