@@ -8,6 +8,8 @@ service:
   portName: http
   containerPort: 8088
   targetGroupArn: "arn:aws:elasticloadbalancing:eu-south-1:861276092552:targetgroup/att-pull-signal/9c318c30d0f00e89"
+  targetType: "ip"
+  ipAddressType: "ipv4"
 
 configmap:
   ACCEPTED_AUDIENCE: "att.interop.pagopa.it/m2m"
