@@ -39,9 +39,9 @@ deployment:
     HOST: "0.0.0.0"
     PORT: 8088
     KEEP_ALIVE_TIMEOUT_MILLIS: "61000"
-    SH_MAX_CONNECTION_POOL: "10"
+    SH_MAX_CONNECTION_POOL: "11"
   envFromConfigmaps:
-    WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
+    \ELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
     SH_DB_HOST: "common-signal-store.DB_HOST_RO"
     SH_DB_NAME: "common-signal-store.DB_NAME"
     SH_DB_PORT: "common-signal-store.DB_PORT"
