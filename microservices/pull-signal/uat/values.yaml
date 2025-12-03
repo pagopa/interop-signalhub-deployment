@@ -8,6 +8,8 @@ service:
   portName: http
   containerPort: 8088
   targetGroupArn: "arn:aws:elasticloadbalancing:eu-south-1:654654262692:targetgroup/uat-pull-signal/5529a4b109d76da6"
+  targetType: "ip"
+  ipAddressType: "ipv4"
 
 configmap:
   ACCEPTED_AUDIENCE: "uat.interop.pagopa.it/m2m"
@@ -39,7 +41,7 @@ deployment:
     HOST: "0.0.0.0"
     PORT: 8088
     KEEP_ALIVE_TIMEOUT_MILLIS: "61000"
-    SH_MAX_CONNECTION_POOL: "11"
+    SH_MAX_CONNECTION_POOL: "10"
   envFromConfigmaps:
     WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
     SH_DB_HOST: "common-signal-store.DB_HOST_RO"
