@@ -8,6 +8,8 @@ service:
   portName: http
   containerPort: 8088
   targetGroupArn: "arn:aws:elasticloadbalancing:eu-south-1:058264142001:targetgroup/prod-push-signal/38d551058a50479d"
+  targetType: "ip"
+  ipAddressType: "ipv4"  
 
 configmap:
   ACCEPTED_AUDIENCE: "interop.pagopa.it/m2m"
