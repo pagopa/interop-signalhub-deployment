@@ -15,7 +15,8 @@ deployment:
       FLYWAY_PLACEHOLDER_REPLACEMENT: true
       FLYWAY_PLACEHOLDERS_NAMESPACE: "vapt"
       FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
-      FLYWAY_SCHEMAS: "vapt_interop,vapt_signalhub"
+      FLYWAY_DEFAULT_SCHEMA: "vapt_flyway"
+      FLYWAY_SCHEMAS: "vapt_flyway,vapt_interop,vapt_signalhub"
     envFromConfigmaps:
       POSTGRES_HOST: "common-signal-store.DB_HOST_RW"
       POSTGRES_PORT: "common-signal-store.DB_PORT"
