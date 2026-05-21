@@ -37,21 +37,21 @@ jobs:
       - name: Print Inputs
         id: print_inputs
         env:
-          PRINT_INPUT_ENVIRONMENT: ${{ inputs.environment }}
-          PRINT_INPUT_REF: ${{ github.ref }}
-          PRINT_INPUT_RUN_K8S_WORKFLOW: ${{ inputs.run_k8s_workflow }}
-          PRINT_INPUT_RUN_TF_APPLY_MONITORING_WORKFLOW: ${{ inputs.run_tf_apply_monitoring_workflow }}
-          PRINT_INPUT_RUN_TF_APPLY_SECRETS_WORKFLOW: ${{ inputs.run_tf_apply_secrets_workflow }}
-          PRINT_INPUT_HELM_FORCE_UPGRADE_MICROSERVICES_CSV: ${{ vars.HELM_FORCE_UPGRADE_MICROSERVICES_CSV }}
-          PRINT_INPUT_HELM_FORCE_UPGRADE_CRONJOBS_CSV: ${{ vars.HELM_FORCE_UPGRADE_CRONJOBS_CSV }}
+          INPUT_ENVIRONMENT: ${{ inputs.environment }}
+          INPUT_REF: ${{ github.ref }}
+          INPUT_RUN_K8S_WORKFLOW: ${{ inputs.run_k8s_workflow }}
+          INPUT_RUN_TF_APPLY_MONITORING_WORKFLOW: ${{ inputs.run_tf_apply_monitoring_workflow }}
+          INPUT_RUN_TF_APPLY_SECRETS_WORKFLOW: ${{ inputs.run_tf_apply_secrets_workflow }}
+          INPUT_HELM_FORCE_UPGRADE_MICROSERVICES_CSV: ${{ vars.HELM_FORCE_UPGRADE_MICROSERVICES_CSV }}
+          INPUT_HELM_FORCE_UPGRADE_CRONJOBS_CSV: ${{ vars.HELM_FORCE_UPGRADE_CRONJOBS_CSV }}
         run: |
-          echo "- environment: \`$PRINT_INPUT_ENVIRONMENT\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- ref: \`$PRINT_INPUT_REF\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- run_k8s_workflow: \`$PRINT_INPUT_RUN_K8S_WORKFLOW\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- run_tf_apply_monitoring_workflow: \`$PRINT_INPUT_RUN_TF_APPLY_MONITORING_WORKFLOW\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- run_tf_apply_secrets_workflow: \`$PRINT_INPUT_RUN_TF_APPLY_SECRETS_WORKFLOW\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- HELM_FORCE_UPGRADE_MICROSERVICES_CSV: \`$PRINT_INPUT_HELM_FORCE_UPGRADE_MICROSERVICES_CSV\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- HELM_FORCE_UPGRADE_CRONJOBS_CSV: \`$PRINT_INPUT_HELM_FORCE_UPGRADE_CRONJOBS_CSV\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- environment: \`$INPUT_ENVIRONMENT\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- ref: \`$INPUT_REF\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- run_k8s_workflow: \`$INPUT_RUN_K8S_WORKFLOW\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- run_tf_apply_monitoring_workflow: \`$INPUT_RUN_TF_APPLY_MONITORING_WORKFLOW\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- run_tf_apply_secrets_workflow: \`$INPUT_RUN_TF_APPLY_SECRETS_WORKFLOW\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- HELM_FORCE_UPGRADE_MICROSERVICES_CSV: \`$INPUT_HELM_FORCE_UPGRADE_MICROSERVICES_CSV\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- HELM_FORCE_UPGRADE_CRONJOBS_CSV: \`$INPUT_HELM_FORCE_UPGRADE_CRONJOBS_CSV\`" >> "$GITHUB_STEP_SUMMARY"
 
   initChecks:
     runs-on: ubuntu-22.04

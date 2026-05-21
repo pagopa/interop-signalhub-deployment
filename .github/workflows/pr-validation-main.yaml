@@ -16,9 +16,9 @@ jobs:
       - name: Print Inputs
         id: print_inputs
         env:
-          PRINT_INPUT_GITHUB_REF: ${{ github.ref }}
+          INPUT_GITHUB_REF: ${{ github.ref }}
         run: |
-          echo "- Github ref: \`$PRINT_INPUT_GITHUB_REF\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Github ref: \`$INPUT_GITHUB_REF\`" >> "$GITHUB_STEP_SUMMARY"
 
 
   extract-infra-commons-tag:
