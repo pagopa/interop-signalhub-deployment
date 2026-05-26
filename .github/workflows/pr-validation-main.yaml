@@ -15,8 +15,10 @@ jobs:
     steps:
       - name: Print Inputs
         id: print_inputs
+        env:
+          INPUT_GITHUB_REF: ${{ github.ref }}
         run: |
-          echo "- Github ref: \`${{ github.ref }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Github ref: \`$INPUT_GITHUB_REF\`" >> "$GITHUB_STEP_SUMMARY"
 
 
   extract-infra-commons-tag:
