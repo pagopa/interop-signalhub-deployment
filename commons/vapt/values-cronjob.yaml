@@ -1,7 +1,7 @@
 namespace: "vapt"
 
 cronjob:
-  suspend: false # unsuspend only during VAPT sessions
+  suspend: true
   image:
     repositoryPrefix: "058264142001.dkr.ecr.eu-south-1.amazonaws.com"
     imagePullPolicy: Always
