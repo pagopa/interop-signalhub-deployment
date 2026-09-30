@@ -106,6 +106,8 @@ jobs:
 
       - name: Extract deployment reusable workflow used tag
         id: extract-deploy-wf-tag
+        env:
+          INFRA_COMMONS_TAG: ${{ vars.INFRA_COMMONS_TAG }}
         run: |
           set -euo pipefail
 
@@ -128,15 +130,17 @@ jobs:
           echo "fullref=$fullref"
           echo "tag=$tag"
 
-          if [[ -n "${{ vars.INFRA_COMMONS_TAG }}" ]]; then
-            final_tag="${{ vars.INFRA_COMMONS_TAG }}"
+          if [[ -n "$INFRA_COMMONS_TAG" ]]; then
+            final_tag="$INFRA_COMMONS_TAG"
           else
             final_tag="$tag"
           fi
           echo "infra_commons_tag_computed=$final_tag" >> $GITHUB_OUTPUT
 
       - name: Show extracted tag
-        run: echo "infra_commons_tag_computed = ${{ steps.extract-deploy-wf-tag.outputs.infra_commons_tag_computed }}"
+        env:
+          INFRA_COMMONS_TAG_COMPUTED: ${{ steps.extract-deploy-wf-tag.outputs.infra_commons_tag_computed }}
+        run: echo "infra_commons_tag_computed = $INFRA_COMMONS_TAG_COMPUTED"
 
   create_runner:
     name: Create Self-Hosted Runner

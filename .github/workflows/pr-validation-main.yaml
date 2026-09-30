@@ -33,8 +33,10 @@ jobs:
 
       - name: Extract tag from reusable workflow
         id: extract-infra-commons-tag
+        env:
+          INPUT_GITHUB_REF: ${{ github.ref }}
         run: |
-          echo "Extracting tag from reusable workflow (wf version ${{ github.ref }})"
+          echo "Extracting tag from reusable workflow (wf version $INPUT_GITHUB_REF)"
 
           if [ ! -f .github/workflows/pr-validation-main.yaml ]; then
             echo "File not found"
@@ -53,7 +55,9 @@ jobs:
           echo "infra_commons_tag=$final_tag" >> $GITHUB_OUTPUT
 
       - name: Show extracted tag
-        run: echo "infra_commons_tag = ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag }}"
+        env:
+          INFRA_COMMONS_TAG: ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag }}
+        run: echo "infra_commons_tag = $INFRA_COMMONS_TAG"
 
   validation:
     if: github.event_name == 'pull_request'
