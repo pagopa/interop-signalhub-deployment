@@ -19,3 +19,4 @@ cronjob:
   envFromSecrets:
     SH_DB_USERNAME: "signal-store-datalake-data-exporter-user.username"
     SH_DB_PASSWORD: "signal-store-datalake-data-exporter-user.password"
+
