@@ -9,7 +9,7 @@ service:
   containerPort: 8088
   targetGroupArn: "arn:aws:elasticloadbalancing:eu-south-1:058264142001:targetgroup/prod-push-signal/38d551058a50479d"
   targetType: "ip"
-  ipAddressType: "ipv4"  
+  ipAddressType: "ipv4"
 
 configmap:
   ACCEPTED_AUDIENCE: "interop.pagopa.it/m2m"
@@ -21,6 +21,7 @@ configmap:
   RATE_LIMITER_TIMEOUT_MILLIS: "500"
 
 deployment:
+  replicas: 15
   flywayInitContainer:
     create: true
     migrationsConfigmap: "common-flyway-migrations"

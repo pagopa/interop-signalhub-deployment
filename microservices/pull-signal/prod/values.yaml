@@ -20,6 +20,7 @@ configmap:
   RATE_LIMITER_TIMEOUT_MILLIS: "500"
 
 deployment:
+  replicas: 15
   flywayInitContainer:
     create: true
     migrationsConfigmap: "common-flyway-migrations"
