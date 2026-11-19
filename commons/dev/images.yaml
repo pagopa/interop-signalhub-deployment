@@ -22,3 +22,5 @@ images:
   jobs:
     batch-cleanup:
       tag: "develop"
+    datalake-data-exporter:
+      tag: "develop"

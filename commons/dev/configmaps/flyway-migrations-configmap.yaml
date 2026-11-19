@@ -181,3 +181,7 @@ data:
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_interop" TO readonly_user;
     GRANT USAGE ON SCHEMA "${NAMESPACE}_signalhub" TO readonly_user;
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_signalhub" TO readonly_user;
+
+  V1.2.0__Grant_read_right_to_datalake_data_exporter_user.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_signalhub" TO datalake_data_exporter_user;
+    GRANT SELECT ON TABLE "${NAMESPACE}_signalhub".signal TO datalake_data_exporter_user;

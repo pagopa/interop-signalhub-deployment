@@ -1,5 +1,9 @@
 namespace: "dev"
 
+local:
+  awsAccountId: "058264553932"
+  env: "dev"
+
 cronjob:
   suspend: true
   image:
