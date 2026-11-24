@@ -5,7 +5,7 @@ local:
   env: "dev"
 
 cronjob:
-  suspend: true
+  suspend: false
   image:
     repositoryPrefix: "058264142001.dkr.ecr.eu-south-1.amazonaws.com"
     imagePullPolicy: Always
