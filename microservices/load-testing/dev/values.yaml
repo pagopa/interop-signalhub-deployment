@@ -4,6 +4,7 @@ serviceAccount:
   roleArn: "arn:aws:iam::058264553932:role/signalhub-be-load-testing-dev"
 
 deployment:
+  replicas: 0
   securityContext:
     runAsUser: 0 # workaround due to Gatling writing files on restricted paths
   env:
